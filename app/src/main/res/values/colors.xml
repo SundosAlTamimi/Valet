@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#643F18</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorAccent">#5F5C5C</color>
+
+
+    <color name="gray_un_editable">#B4B0B0</color>
+    <color name="gray_dark">#5F5C5C</color>
+    <color name="gray_light">#ECE8E8</color>
+    <color name="gray_dark_one">#575252</color>
+    <color name="gray_dark_two">#AA9C9C</color>
+    <color name="orange">#FF7500</color>
+    <color name="light_orange">#FAEBD7</color>
+    <color name="light_orange_2">#DD792E</color>
+    <color name="light_orange_3">#F7CEBF</color>
+    <color name="orangeHover">#EC9568</color>
+    <!--    F1712F-->
+    <color name="alpha_black">#320C0C0C</color>
+    <color name="alpha_black_dark">#C30C0C0C</color>
+    <color name="alpha_white">#C1FAFAFA</color>
+    <color name="wooden">#643F18</color>
+    <color name="preview">#C24641</color>
+    <color name="alpha_white2">#E2FFFEFE</color>
+    <color name="light_gray">#EFEBEB</color>
+    <color name="alpha_gray">#32FFFFFF</color>
+    <color name="alpha_white3">#28FAFAFA</color>
+    <color name="oranges">#90FF7500</color>
+    <color name="alpha_black_dark2">#920C0C0C</color>
+    <color name="alpha_white4">#1DFAFAFA</color>
+
+
+</resources>
