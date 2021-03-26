@@ -5,6 +5,7 @@
     android:layout_width="400dp"
     android:layout_height="550dp"
     android:gravity="center"
+    android:layoutDirection="ltr"
     android:orientation="vertical"
     android:background="@color/light_orange"
     tools:context=".MainActivity">
