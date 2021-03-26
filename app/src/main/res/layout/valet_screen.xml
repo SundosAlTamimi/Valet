@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
+    android:background="@color/light_orange"
     tools:openDrawer="start">
 
     <TextView
@@ -27,7 +28,7 @@
         android:id="@+id/mapView"
         android:layout_width="match_parent"
         android:background="@drawable/gg2"
-        android:layout_height="550dp"
+        android:layout_height="match_parent"
         android:layout_margin="20dp" />
 
 </LinearLayout>

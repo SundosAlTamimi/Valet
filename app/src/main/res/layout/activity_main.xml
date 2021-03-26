@@ -3,29 +3,33 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
+    android:background="@drawable/main_back"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone">
-
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize" />
-
-    </com.google.android.material.appbar.AppBarLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
+        android:background="@color/light_orange"
         android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/available"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_weight="0"
+            android:fontFamily="serif"
+            android:gravity="center_vertical"
+            android:text="Book a valet"
+            android:textColor="@color/preview"
+            android:textSize="22sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -57,27 +61,13 @@
 
         </LinearLayout>
 
-        <ImageView
+        <ImageButton
             android:id="@+id/mapView"
             android:layout_width="match_parent"
-            android:background="@drawable/gg"
-            android:layout_height="300dp"
+            android:background="@drawable/gg4"
+            android:layout_height="match_parent"
             android:layout_margin="20dp" />
 
-
-        <TextView
-            android:id="@+id/available"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginHorizontal="20dp"
-            android:layout_weight="0"
-            android:visibility="gone"
-            android:fontFamily="serif"
-            android:gravity="center_vertical"
-            android:text="Available !"
-            android:textColor="@color/preview"
-            android:textSize="20sp" />
 
         <Button
             android:id="@+id/request_valet"

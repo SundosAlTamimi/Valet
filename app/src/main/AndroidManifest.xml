@@ -18,13 +18,22 @@
 
         <activity android:name=".LogIn">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"
+                    />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
         <activity android:name=".ValetScreen">
+
+        </activity>
+
+        <activity android:name=".ParkingInfo">
+
+        </activity>
+
+        <activity android:name=".TrackingScreen">
 
         </activity>
 

@@ -24,6 +24,7 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -54,13 +55,92 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getSupportActionBar().hide();
 
         nDrawerLayout = findViewById(R.id.nav_view);
         Button request = findViewById(R.id.request_valet);
         Spinner loc = findViewById(R.id.loc);
-        ImageView map = findViewById(R.id.mapView);
+        ImageButton map = findViewById(R.id.mapView);
         TextView avi = findViewById(R.id.available);
 
+        map.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Dialog dialog = new Dialog(MainActivity.this);
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setContentView(R.layout.conferm_req);
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+                Button req = dialog.findViewById(R.id.request);
+
+                req.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        progressDialog = new ProgressDialog(MainActivity.this, R.style.MyAlertDialogStyle);
+                        progressDialog.setMessage("Waiting for valet...");
+                        progressDialog.show();
+
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                progressDialog.dismiss();
+
+                                Dialog dialog2 = new Dialog(MainActivity.this);
+                                dialog2.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                                dialog2.setContentView(R.layout.valet_dialog);
+                                dialog2.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+                                Button req = dialog2.findViewById(R.id.request);
+
+                                req.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+
+
+                                        Dialog dialog3 = new Dialog(MainActivity.this);
+                                        dialog3.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                                        dialog3.setContentView(R.layout.waiting_dialog);
+                                        dialog3.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+                                        Button scan = dialog3.findViewById(R.id.scan);
+
+                                        scan.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+
+                                                IntentIntegrator intentIntegrator = new IntentIntegrator(MainActivity.this);
+                                                intentIntegrator.setDesiredBarcodeFormats(intentIntegrator.ALL_CODE_TYPES);
+                                                intentIntegrator.setBeepEnabled(true);
+                                                intentIntegrator.setCameraId(0);
+                                                intentIntegrator.setOrientationLocked(true);
+                                                intentIntegrator.setPrompt("SCAN");
+                                                intentIntegrator.setBarcodeImageEnabled(false);
+                                                intentIntegrator.initiateScan();
+
+                                                dialog3.dismiss();
+                                            }
+                                        });
+                                        dialog2.dismiss();
+                                        dialog3.show();
+
+                                    }
+                                });
+                                dialog2.show();
+                            }
+                        }, 6000);
+
+
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
+
+            }
+        });
+
+        /*
         request.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -100,21 +180,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             });
                             dialog.show();
                         }
-                    }, 3000);
+                    }, 6000);
 
                 }
 
         }
         });
-
-
-        map.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                avi.setVisibility(View.VISIBLE);
-                isAvilable = 1;
-            }
-        });
+*/
 
         List<String> gradeList  = new ArrayList<>();
         gradeList.add("");
@@ -139,12 +211,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
 
 
-        MaterialToolbar mTopToolbar = (MaterialToolbar) findViewById(R.id.toolbar);
+//        MaterialToolbar mTopToolbar = (MaterialToolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(mTopToolbar);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer,mTopToolbar,
+                this, drawer,
                 R.string.common_open_on_phone,
                 R.string.common_open_on_phone);
 
@@ -166,12 +238,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Log.d("MainActivity", "cancelled scan");
                 Toast.makeText(this, "cancelled", Toast.LENGTH_SHORT).show();
                 barcodeValue = "cancelled";
+
+
             } else {
                 Log.d("MainActivity", "Scanned");
                 Toast.makeText(this, "Scanned ! ", Toast.LENGTH_SHORT).show();
 
                 barcodeValue = Result.getContents();
 
+                Intent intent = new Intent(MainActivity.this, ParkingInfo.class);
+                startActivity(intent);
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);

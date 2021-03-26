@@ -1,10 +1,12 @@
 package com.example.valet;
 
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -17,13 +19,13 @@ import com.google.zxing.integration.android.IntentIntegrator;
 
 public class ValetScreen extends AppCompatActivity {
 
-
+    ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.valet_screen);
-
+        getSupportActionBar().hide();
 
         ImageView img = findViewById(R.id.mapView);
 
@@ -42,23 +44,29 @@ public class ValetScreen extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
 
-                        Dialog dialog2 = new Dialog(ValetScreen.this);
-                        dialog2.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                        dialog2.setContentView(R.layout.qr);
-                        dialog2.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                        progressDialog = new ProgressDialog(ValetScreen.this, R.style.MyAlertDialogStyle);
+                        progressDialog.setMessage("Waiting for client to accept your service...");
+                        progressDialog.show();
 
-                        Button serve = dialog2.findViewById(R.id.serve);
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                progressDialog.dismiss();
 
+                                Intent intent = new Intent(ValetScreen.this, TrackingScreen.class);
+                                startActivity(intent);
+                            }
 
-                        dialog2.show();
+                        }, 6000);
+
 
                     }
                 });
+
                 dialog.show();
 
             }
         });
     }
-
 
 }

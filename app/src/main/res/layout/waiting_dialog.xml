@@ -2,51 +2,40 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/drawer_layout"
-    android:layout_width="400dp"
-    android:layout_height="550dp"
-    android:fitsSystemWindows="true"
+    android:layout_width="350dp"
+    android:layout_height="240dp"
+    android:gravity="center"
     android:background="@color/white"
     android:orientation="vertical"
-    tools:openDrawer="start">
+    tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/available"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="30dp"
+        android:gravity="center"
+        android:layout_margin="20dp"
+        android:layout_marginBottom="10dp"
+        android:textColor="@color/black"
+        android:text="Ahmad Shukri is waiting for you in 'Tag Mall' !"
+        android:textSize="18sp" />
+
+    <Button
+        android:id="@+id/scan"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:layout_gravity="center"
-        android:layout_marginHorizontal="20dp"
-        android:layout_weight="0"
-        android:fontFamily="serif"
-        android:gravity="center_vertical"
-        android:text="My QR Code"
-        android:textColor="@color/preview"
-        android:textSize="20sp" />
-
-    <ImageView
-        android:id="@+id/mapView"
-        android:layout_width="350dp"
-        android:layout_gravity="center"
-        android:background="@drawable/qr"
-        android:layout_height="350dp"
-        android:layout_margin="20dp" />
-
-    <Button
-        android:id="@+id/done"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_weight="0"
+        android:layout_marginVertical="20dp"
         android:background="@drawable/frame_shape"
         android:fontFamily="serif"
         android:paddingStart="30dp"
         android:paddingLeft="30dp"
         android:paddingEnd="30dp"
         android:paddingRight="30dp"
-        android:text="Done"
+        android:text="Scan His QR"
         android:textAllCaps="false"
         android:textColor="@color/white"
         android:textSize="20sp" />
-
 </LinearLayout>
