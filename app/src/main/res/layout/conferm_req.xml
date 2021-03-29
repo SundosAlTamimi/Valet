@@ -5,7 +5,7 @@
     android:layout_width="350dp"
     android:layout_height="200dp"
     android:gravity="center"
-    android:background="@color/white"
+    android:background="@drawable/alpha_frame2"
     android:orientation="vertical"
     android:layoutDirection="ltr"
     tools:context=".MainActivity">
@@ -16,7 +16,7 @@
         android:layout_gravity="center"
         android:layout_marginTop="30dp"
         android:layout_marginBottom="10dp"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:text="Request a valet in 'Tag Mall' !"
         android:textSize="18sp" />
 

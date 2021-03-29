@@ -24,7 +24,7 @@
             android:fontFamily="serif"
             android:text="Your car is safely parked !"
             android:textColor="@color/preview"
-            android:textSize="22sp" />
+            android:textSize="25sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -112,6 +112,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:visibility="gone"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_main"
         app:menu="@menu/nav_menu" />

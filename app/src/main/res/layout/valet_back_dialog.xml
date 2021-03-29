@@ -2,40 +2,65 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="350dp"
-    android:layout_height="240dp"
+    android:layout_width="400dp"
     android:layoutDirection="ltr"
-    android:gravity="center"
+    android:layout_height="280dp"
     android:background="@drawable/alpha_frame2"
     android:orientation="vertical"
+    android:padding="20dp"
     tools:context=".MainActivity">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="20dp"
+        android:layout_weight="1"
+        android:fontFamily="serif"
         android:gravity="center"
-        android:layout_margin="20dp"
-        android:layout_marginBottom="10dp"
         android:textColor="@color/white"
-        android:text="Ahmad Shukri is waiting for you in 'Tag Mall' !"
+        android:text="Your car will be ready after 10 minutes with :"
         android:textSize="18sp" />
 
-    <Button
-        android:id="@+id/scan"
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:layout_weight="1"
+        android:fontFamily="serif"
+        android:textColor="@color/white"
+        android:text="Ahmad Shukri"
+        android:textSize="18sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_marginTop="20dp"
+        android:layout_weight="1"
+        android:fontFamily="serif"
+        android:textColor="@color/white"
+        android:text="Gate Number : 3"
+        android:textSize="18sp" />
+
+
+
+    <Button
+        android:id="@+id/request"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginVertical="20dp"
+        android:layout_weight="0"
         android:background="@drawable/frame_shape"
         android:fontFamily="serif"
         android:paddingStart="30dp"
         android:paddingLeft="30dp"
         android:paddingEnd="30dp"
+        android:layout_marginTop="20dp"
         android:paddingRight="30dp"
-        android:text="Scan His QR"
+        android:text="Scan Barcode"
         android:textAllCaps="false"
         android:textColor="@color/white"
         android:textSize="20sp" />

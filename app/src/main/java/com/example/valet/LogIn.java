@@ -14,7 +14,9 @@ import android.os.Handler;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
@@ -35,7 +37,7 @@ import com.google.zxing.integration.android.IntentIntegrator;
 
 public class LogIn extends AppCompatActivity {
 
-    LinearLayout linear;
+    LinearLayout linear, logInLinear;
     Button left, right, login;
     TextView t1, t2;
     int index = 1;
@@ -49,6 +51,7 @@ public class LogIn extends AppCompatActivity {
 
         EditText user = findViewById(R.id.login_username);
         linear = findViewById(R.id.linear);
+        logInLinear = findViewById(R.id.login_linearLayout);
         login = findViewById(R.id.login_login_btn);
         left = findViewById(R.id.left);
         right = findViewById(R.id.right);
@@ -134,8 +137,18 @@ public class LogIn extends AppCompatActivity {
 
         changePic();
 
+        animateLogin();
     }
 
+    void animateLogin(){
+
+        Animation fadeIn = new AlphaAnimation(0, 1);
+        fadeIn.setDuration(2000);
+
+        AnimationSet animation = new AnimationSet(true);
+        animation.addAnimation(fadeIn);
+        logInLinear.setAnimation(animation);
+    }
 
     public void changePic() {
 

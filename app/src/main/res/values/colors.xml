@@ -34,8 +34,9 @@
     <color name="alpha_gray">#32FFFFFF</color>
     <color name="alpha_white3">#28FAFAFA</color>
     <color name="oranges">#90FF7500</color>
-    <color name="alpha_black_dark2">#920C0C0C</color>
+    <color name="alpha_black_dark2">#D20C0C0C</color>
     <color name="alpha_white4">#1DFAFAFA</color>
+    <color name="alpha_white5">#A4FAFAFA</color>
 
 
 </resources>

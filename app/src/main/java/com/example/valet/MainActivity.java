@@ -58,7 +58,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getSupportActionBar().hide();
 
         nDrawerLayout = findViewById(R.id.nav_view);
-        Button request = findViewById(R.id.request_valet);
         Spinner loc = findViewById(R.id.loc);
         ImageButton map = findViewById(R.id.mapView);
         TextView avi = findViewById(R.id.available);
@@ -71,6 +70,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialog.setContentView(R.layout.conferm_req);
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme; //style id
+
 
                 Button req = dialog.findViewById(R.id.request);
 
@@ -91,6 +92,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 dialog2.requestWindowFeature(Window.FEATURE_NO_TITLE);
                                 dialog2.setContentView(R.layout.valet_dialog);
                                 dialog2.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                                dialog2.getWindow().getAttributes().windowAnimations = R.style.DialogTheme; //style id
+
 
                                 Button req = dialog2.findViewById(R.id.request);
 
@@ -103,6 +106,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                         dialog3.requestWindowFeature(Window.FEATURE_NO_TITLE);
                                         dialog3.setContentView(R.layout.waiting_dialog);
                                         dialog3.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                                        dialog3.getWindow().getAttributes().windowAnimations = R.style.DialogTheme; //style id
+
 
                                         Button scan = dialog3.findViewById(R.id.scan);
 

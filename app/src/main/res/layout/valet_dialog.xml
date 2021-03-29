@@ -5,7 +5,7 @@
     android:layout_width="400dp"
     android:layoutDirection="ltr"
     android:layout_height="280dp"
-    android:background="@color/light_orange"
+    android:background="@drawable/alpha_frame2"
     android:orientation="vertical"
     tools:context=".MainActivity">
 
@@ -16,7 +16,7 @@
         android:layout_marginTop="20dp"
         android:layout_weight="1"
         android:fontFamily="serif"
-        android:textColor="@color/preview"
+        android:textColor="@color/white"
         android:text="Waiting valet"
         android:textSize="18sp" />
 
