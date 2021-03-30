@@ -38,5 +38,12 @@
     <color name="alpha_white4">#1DFAFAFA</color>
     <color name="alpha_white5">#A4FAFAFA</color>
 
+    <color name="orange_light">#C880391E</color>
+    <color name="greenApp"> #009801</color>
+    <color name="noColor">#00439169</color>
+    <color name="alpha_green">#B4235A33</color>
+    <color name="font_gray">#c7c8c8</color>
+    <color name="layout_white">#fbfbfb</color>
+
 
 </resources>
