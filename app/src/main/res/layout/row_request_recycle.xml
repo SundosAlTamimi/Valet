@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bac_search"
+    android:orientation="vertical"
+    android:layout_weight="1"
+    android:padding="10dp"
+    android:layout_margin="10dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/profile_image"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_baseline_person_pin_24"
+            app:civ_border_color="@color/greenApp"
+            app:civ_border_width="3dp" />
+
+        <TextView
+            android:id="@+id/driverName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/alpha_green"
+            android:textSize="20dp"
+            android:layout_marginVertical="5dp"
+            android:text="Driver Name : Amer " />
+
+        <TextView
+            android:id="@+id/accept"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:padding="5dp"
+            android:background="@drawable/layout"
+            android:text="Accept" />
+
+    </LinearLayout>
+</LinearLayout>
