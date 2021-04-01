@@ -53,8 +53,8 @@ public class ValetScreen extends AppCompatActivity {
                             public void run() {
                                 progressDialog.dismiss();
 
-                                Intent intent = new Intent(ValetScreen.this, TrackingScreen.class);
-                                startActivity(intent);
+//                                Intent intent = new Intent(ValetScreen.this, TrackingScreen.class);
+//                                startActivity(intent);
                             }
 
                         }, 6000);

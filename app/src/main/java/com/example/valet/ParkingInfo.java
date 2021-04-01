@@ -34,6 +34,42 @@ public class ParkingInfo extends AppCompatActivity implements NavigationView.OnN
         setContentView(R.layout.parking_dialog);
         getSupportActionBar().hide();
 
+        NavigationView navigationView = (NavigationView)
+                findViewById(R.id.nav_view);
+
+        navigationView.setNavigationItemSelectedListener(this);
+
+    }
+
+    void scanDialog(){
+
+        Dialog dialog3 = new Dialog(ParkingInfo.this);
+        dialog3.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog3.setContentView(R.layout.waiting_dialog);
+        dialog3.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog3.getWindow().getAttributes().windowAnimations = R.style.DialogTheme; //style id
+
+
+        Button scan = dialog3.findViewById(R.id.scan);
+
+        scan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                IntentIntegrator intentIntegrator = new IntentIntegrator(ParkingInfo.this);
+                intentIntegrator.setDesiredBarcodeFormats(intentIntegrator.ALL_CODE_TYPES);
+                intentIntegrator.setBeepEnabled(true);
+                intentIntegrator.setCameraId(0);
+                intentIntegrator.setOrientationLocked(true);
+                intentIntegrator.setPrompt("SCAN");
+                intentIntegrator.setBarcodeImageEnabled(false);
+                intentIntegrator.initiateScan();
+
+                dialog3.dismiss();
+            }
+        });
+        dialog3.show();
+
     }
 
     @Override
@@ -150,7 +186,7 @@ public class ParkingInfo extends AppCompatActivity implements NavigationView.OnN
 
                 barcodeValue = Result.getContents();
 
-                Intent intent = new Intent(ParkingInfo.this, ParkingInfo.class);
+                Intent intent = new Intent(ParkingInfo.this, MainActivity.class);
                 startActivity(intent);
             }
         } else {
