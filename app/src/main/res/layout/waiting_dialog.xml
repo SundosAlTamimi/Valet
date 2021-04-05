@@ -19,7 +19,7 @@
         android:layout_margin="20dp"
         android:layout_marginBottom="10dp"
         android:textColor="@color/white"
-        android:text="Ahmad Shukri is waiting for you in 'Tag Mall' !"
+        android:text="Ahmad Shukri is waiting for you !"
         android:textSize="18sp" />
 
     <Button
