@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:background="@drawable/car_park2"
     android:gravity="center"
-    android:background="@color/white"
     android:layoutDirection="ltr"
     android:orientation="vertical"
     tools:context=".MainActivity">
@@ -243,19 +242,19 @@
                 <Button
                     android:id="@+id/left"
                     android:layout_width="50dp"
-                    android:layout_height="50dp"
+                    android:layout_height="match_parent"
                     android:layout_alignParentBottom="true"
                     android:layout_gravity="center_vertical"
                     android:layout_marginHorizontal="10dp"
                     android:layout_marginBottom="0dp"
 
-                    android:visibility="gone"
                     android:background="@drawable/left"
                     android:fontFamily="serif"
                     android:text="@string/log_in"
                     android:textAllCaps="false"
                     android:textColor="@color/alpha_green"
-                    android:textSize="20sp" />
+                    android:textSize="20sp"
+                    android:visibility="gone" />
 
                 <Button
                     android:id="@+id/right"
