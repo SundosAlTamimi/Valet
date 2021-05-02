@@ -4,12 +4,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
     android:layout_width="400dp"
-    android:layout_height="550dp"
+    android:layout_height="500dp"
     android:fitsSystemWindows="true"
     android:layoutDirection="ltr"
-    android:background="@color/white"
+    android:background="@color/noColor"
     android:orientation="vertical"
     tools:openDrawer="start">
+
+
+    <Button
+        android:id="@+id/done"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="center"
+        android:background="@drawable/layout_right"
+        android:padding="10dp"
+        android:text="Done"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/available"
@@ -33,21 +47,6 @@
         android:layout_height="350dp"
         android:layout_margin="20dp" />
 
-    <Button
-        android:id="@+id/done"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_weight="0"
-        android:background="@drawable/frame_shape"
-        android:fontFamily="serif"
-        android:paddingStart="30dp"
-        android:paddingLeft="30dp"
-        android:paddingEnd="30dp"
-        android:paddingRight="30dp"
-        android:text="Done"
-        android:textAllCaps="false"
-        android:textColor="@color/white"
-        android:textSize="20sp" />
+
 
 </LinearLayout>

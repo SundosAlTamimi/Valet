@@ -12,11 +12,15 @@ import androidx.navigation.Navigation;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.location.Address;
+import android.location.Geocoder;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -30,6 +34,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RatingBar;
+import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,11 +56,30 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLConnection;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -67,7 +92,8 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
     String barcodeValue;
 
     ProgressDialog progressDialog;
-
+    String latitude , longitude;
+    Captains captain;
 
     private GoogleMap mMap;
     Button scan;
@@ -79,9 +105,13 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
     double v1 = 31.969570, v2 = 35.914191;
     double a1 = 31.968420, a2 = 35.916258;
 
+    public static String[] parts ;
+
 
     private Map<Marker, Map<String, Object>> markers = new HashMap<>();
     private Map<String, Object> dataModel = new HashMap<>();
+
+    SearchView searchView;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -92,12 +122,51 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
         scan = findViewById(R.id.scan);
         nDrawerLayout = findViewById(R.id.nav_view);
         Spinner loc = findViewById(R.id.loc);
-        ImageButton map = findViewById(R.id.mapView);
+        //ImageButton map = findViewById(R.id.mapView);
         TextView avi = findViewById(R.id.available);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        searchView = findViewById(R.id.search);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+
+                String location = searchView.getQuery().toString();
+                List<Address> addressList = null;
+
+                if(location!= null || !location.equals("")){
+                    Geocoder geocoder = new Geocoder(MainActivity.this);
+                    try {
+                        addressList = geocoder.getFromLocationName(location,1);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    Address address = addressList.get(0);
+                    LatLng latLng = new LatLng(address.getLatitude() , address.getLongitude());
+                    mMap.addMarker(new MarkerOptions().position(latLng).title(location));
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng , 15));
+
+                    //Log.e("*****" ,  getAddressName(MainActivity.this , address.getLatitude() ,  address.getLongitude()));
+
+
+                    mMap.setOnMarkerClickListener(MainActivity.this);
+                }
+
+
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
+        //mapFragment.getMapAsync(this);
 
         initialization();
         scan.setOnClickListener(new View.OnClickListener() {
@@ -175,7 +244,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
                             v2 = v2 - 0.000010;
                             a1 = 31.968420;
                             a2 = 35.916258;
-                            Log.e("Location", "loc" + v1 + "  " + v2 + "   " + a1 + "   " + a2);
+                            //Log.e("Location", "loc" + v1 + "  " + v2 + "   " + a1 + "   " + a2);
                             LatLng latLng = new LatLng(v1, v2);
                             LatLng latLng2 = new LatLng(a1, a2);
                             LatLngListMarker.clear();
@@ -197,7 +266,23 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
     public void onMapReady(GoogleMap googleMap) {
 
         mMap = googleMap;
-        location(0);
+
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener(){
+            public void onMapClick(LatLng point){
+                Toast.makeText(MainActivity.this,
+                        point.latitude + ", " + point.longitude,
+                        Toast.LENGTH_SHORT).show();
+
+                mMap.addMarker(new MarkerOptions().position(point).title(getAddressName(MainActivity.this , point.latitude , point.longitude)));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(point , 15));
+                mMap.setOnMarkerClickListener(MainActivity.this);
+
+                Log.e("*****" ,  getAddressName(MainActivity.this , point.latitude ,  point.longitude));
+            }
+        });
+
+
+        //location(0);
 
 
     }
@@ -215,7 +300,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
         }
 
         // Add a marker in Sydney and move the camera
-        Log.e("mmmmmm", "locationCall");
+        //Log.e("mmmmmm", "locationCall");
         LatLng sydney = null;
         for (int i = 0; i < LatLngListMarker.size(); i++) {
 
@@ -277,9 +362,11 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
 
 
         Log.e("******", marker.getTitle());
+        latitude = ""+ marker.getPosition().latitude;
+        longitude = ""+ marker.getPosition().longitude;
 
         if (!marker.getTitle().equals("My Location"))
-            reqService();
+            reqService(marker);
 
         return false;
     }
@@ -294,7 +381,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
         return smallMarker;
     }
 
-    void reqService() {
+    void reqService(Marker marker) {
 
         Dialog dialog = new Dialog(MainActivity.this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -303,11 +390,18 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
         dialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme; //style id
 
 
+        TextView text = dialog.findViewById(R.id.text);
         Button req = dialog.findViewById(R.id.request);
+
+        text.setText("Request a valet in '"+ marker.getTitle() + "'");
 
         req.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
+                new JSONTask().execute();
+
 
                 progressDialog = new ProgressDialog(MainActivity.this, R.style.MyAlertDialogStyle);
                 progressDialog.setMessage("Waiting for valet...");
@@ -318,33 +412,9 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
                     public void run() {
                         progressDialog.dismiss();
 
-                        Dialog dialog2 = new Dialog(MainActivity.this);
-                        dialog2.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                        dialog2.setContentView(R.layout.valet_dialog);
-                        dialog2.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                        dialog2.getWindow().getAttributes().windowAnimations = R.style.DialogTheme; //style id
+                        new JSONTask2().execute();
 
 
-                        Button req = dialog2.findViewById(R.id.request);
-
-                        req.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-
-                                dialog2.dismiss();
-
-                                initialization();
-
-                                scan.setVisibility(View.VISIBLE);
-
-/*
-
-
- */
-
-                            }
-                        });
-                        dialog2.show();
                     }
                 }, 6000);
 
@@ -387,6 +457,35 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
 
     }
 
+    public String getAddressName(Context context, double lat, double lng) {
+        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
+            Address obj = addresses.get(0);
+
+            String add = ""; //obj.getAddressLine(0);
+//            add = add + "\n" + obj.getCountryName();
+//            add = add + "\n" + obj.getCountryCode();
+//            add = add + "\n" + obj.getAdminArea();
+//            add = add + "\n" + obj.getPostalCode();
+//            add = add + "\n" + obj.getSubAdminArea();
+//            add = add + "\n" + obj.getLocality();
+//            add = add + "\n" + obj.getSubThoroughfare() ;
+            add = add + "\n" + obj.getSubLocality() ;
+//            add = add + "\n" + obj.getFeatureName() ;
+//            add = add + "\n" + obj.getPremises() ;
+//            add = add + "\n" + obj.getSubAdminArea() ;
+//            add = add + "\n" + obj.getExtras() ;
+//            add = add + "\n" + obj.getMaxAddressLineIndex() ;
+
+            return add;
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            return null;
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -404,6 +503,8 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
 
                 barcodeValue = Result.getContents();
 
+                parts = barcodeValue.split("-");
+
                 scan.setVisibility(View.GONE);
 
                 Intent intent = new Intent(MainActivity.this, ParkingInfo.class);
@@ -412,6 +513,10 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    public String[] getParkingInfo(){
+        return parts;
     }
 
     @Override
@@ -464,4 +569,326 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
             super.onBackPressed();
         }
     }
+
+
+    private class JSONTask extends AsyncTask<String, String, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+
+                String JsonResponse = null;
+                HttpClient client = new DefaultHttpClient();
+                HttpPost request = new HttpPost();
+                request.setURI(new URI("http://5.189.130.98:8085/exportt.php"));
+
+
+                String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+                String currentTime = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
+
+                Clients newClient = new Clients();
+                newClient.setUserName(PublicInfo.name);
+                newClient.setPassword(PublicInfo.password);
+                newClient.setE_mail(PublicInfo.Email);
+                newClient.setPhoneNumber(PublicInfo.number);
+                newClient.setCarType(PublicInfo.carType);
+                newClient.setCarModel(PublicInfo.carModel);
+                newClient.setCarColor(PublicInfo.carColor);
+                newClient.setCarLot(PublicInfo.carNo);
+                newClient.setTime(currentTime);
+                newClient.setDate(currentDate);
+                newClient.setLatitude(latitude);
+                newClient.setLongitude(longitude);
+
+
+                JSONObject jsonObjectNewClient = newClient.getJSONObject2();
+
+                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
+                nameValuePairs.add(new BasicNameValuePair("REQUEST_VALET", jsonObjectNewClient.toString().trim()));
+
+                //Log.e("tag", "" + jsonArrayPics.toString());
+
+                request.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+                HttpResponse response = client.execute(request);
+
+                BufferedReader in = new BufferedReader(new
+                        InputStreamReader(response.getEntity().getContent()));
+
+                StringBuffer sb = new StringBuffer("");
+                String line = "";
+
+                while ((line = in.readLine()) != null) {
+                    sb.append(line);
+                }
+
+                in.close();
+
+                JsonResponse = sb.toString();
+
+                Log.e("tag***", "" + JsonResponse);
+
+                return JsonResponse;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            if (s != null) {
+                if (s.contains("REQUEST_VALET SUCCESS")) {
+
+                    Log.e("tag", "****Success");
+                } else {
+                    Log.e("tag", "****Failed to export data");
+                }
+            } else {
+                Log.e("tag", "****Failed to export data Please check internet connection");
+            }
+        }
+    }
+
+
+    private class JSONTask2 extends AsyncTask<String, String, List<Clients>> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+        }
+
+        @Override
+        protected List<Clients> doInBackground(String... params) {
+            URLConnection connection = null;
+            BufferedReader reader = null;
+
+            try {
+
+                URL url = new URL("http://5.189.130.98:8085/importt.php?FLAG=1");
+
+                URLConnection conn = url.openConnection();
+                conn.setDoOutput(true);
+
+                reader = new BufferedReader(new
+                        InputStreamReader(conn.getInputStream()));
+
+                StringBuilder sb = new StringBuilder();
+                String line = null;
+
+                // Read Server Response
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line);
+                }
+
+                String finalJson = sb.toString();
+//                Log.e("finalJson*********", finalJson);
+
+                JSONObject parentObject = new JSONObject(finalJson);
+
+
+                try {
+                    JSONArray parentArrayOrders = parentObject.getJSONArray("CAPTAINS_STATUS");
+
+                    for (int i = 0; i < parentArrayOrders.length(); i++) {
+                        JSONObject finalObject = parentArrayOrders.getJSONObject(0);
+
+                        captain = new Captains();
+                        captain.setCaptainName( finalObject.getString("CAPTAIN_NAME"));
+                        captain.setCaptainNumber( finalObject.getString("CAPTAIN_NO"));
+                        captain.setCaptain_rate( finalObject.getString("CAPTAIN_RATE"));
+                        //captain.setCaptainPic( finalObject.getString("CAPTAIN_PIC"));
+                        //captain.setClientName( finalObject.getString("CLIENT_NAME"));
+                        //captain.setClientPhone( finalObject.getString("CLIENT_PHONE"));
+
+//                        client.setPassword( finalObject.getString("CAR_PIC"));
+
+                    }
+                } catch (JSONException e) {
+//                    Log.e("Import Data2", e.getMessage().toString());
+                }
+
+            } catch (MalformedURLException e) {
+//                Log.e("Customer", "********ex1");
+                e.printStackTrace();
+            } catch (IOException e) {
+//                Log.e("Customer", e.getMessage().toString());
+                e.printStackTrace();
+
+            } catch (JSONException e) {
+//                Log.e("Customer", "********ex3  " + e.toString());
+                e.printStackTrace();
+            } finally {
+//                Log.e("Customer", "********finally");
+                if (connection != null) {
+//                    Log.e("Customer", "********ex4");
+                    // connection.disconnect();
+                }
+                try {
+                    if (reader != null) {
+                        reader.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
+        }
+
+
+        @Override
+        protected void onPostExecute(final List<Clients> result) {
+            super.onPostExecute(result);
+
+            if (captain != null) {
+                Log.e("Captain", "********" + captain.getCaptainName());
+                valetDialog();
+
+            } else {
+//                Toast.makeText(LoginActivity.this, "Not able to fetch data from server, please check url.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+
+    private class JSONTask3 extends AsyncTask<String, String, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+
+                String JsonResponse = null;
+                HttpClient client = new DefaultHttpClient();
+                HttpPost request = new HttpPost();
+                request.setURI(new URI("http://5.189.130.98:8085/exportt.php"));
+
+
+
+                captain.setClientName(PublicInfo.name);
+                captain.setClientPhone(PublicInfo.number);
+
+                JSONObject jsonObjectCaptain = captain.getJSONObject();
+
+                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
+                nameValuePairs.add(new BasicNameValuePair("ACCEPT_CAPTAIN", jsonObjectCaptain.toString().trim()));
+                nameValuePairs.add(new BasicNameValuePair("CLIENT_NAME", PublicInfo.name));
+                nameValuePairs.add(new BasicNameValuePair("CLIENT_NO", PublicInfo.number));
+
+
+                //Log.e("tag", "" + jsonArrayPics.toString());
+
+                request.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+                HttpResponse response = client.execute(request);
+
+                BufferedReader in = new BufferedReader(new
+                        InputStreamReader(response.getEntity().getContent()));
+
+                StringBuffer sb = new StringBuffer("");
+                String line = "";
+
+                while ((line = in.readLine()) != null) {
+                    sb.append(line);
+                }
+
+                in.close();
+
+                JsonResponse = sb.toString();
+
+                return JsonResponse;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            if (s != null) {
+                if (s.contains("ACCEPT_CAPTAIN SUCCESS")) {
+
+                    Log.e("tag", "****Success");
+                } else {
+                    Log.e("tag", "****Failed to export data");
+                }
+            } else {
+                Log.e("tag", "****Failed to export data Please check internet connection");
+            }
+        }
+    }
+
+
+    void valetDialog(){
+
+        Dialog dialog2 = new Dialog(MainActivity.this);
+        dialog2.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog2.setContentView(R.layout.valet_dialog);
+        dialog2.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog2.getWindow().getAttributes().windowAnimations = R.style.DialogTheme; //style id
+
+
+        TextView name = dialog2.findViewById(R.id.name);
+        TextView phone = dialog2.findViewById(R.id.phone);
+        RatingBar rate = dialog2.findViewById(R.id.rating);
+
+        name.setText("Name :" + captain.getCaptainName());
+        phone.setText("Phone # :" + captain.getCaptainNumber());
+        int rat = Integer.parseInt(captain.getCaptain_rate());
+        rate.setRating(rat);
+
+/*
+        name.setText(captain.getCaptainName());
+        phone.setText(captain.getCaptainNumber());
+        rate.setRating(Integer.parseInt(captain.getCaptain_rate()));
+*/
+
+        Button req = dialog2.findViewById(R.id.request);
+        Button cancel = dialog2.findViewById(R.id.cancel);
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog2.dismiss();
+            }
+        });
+
+
+        req.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                new JSONTask3().execute();
+
+                dialog2.dismiss();
+
+                initialization();
+
+                scan.setVisibility(View.VISIBLE);
+
+            }
+        });
+        dialog2.show();
+
+    }
+
+
 }

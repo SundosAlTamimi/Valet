@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="400dp"
-    android:layout_height="650dp"
+    android:layout_height="450dp"
     android:background="@color/noColor"
     android:layoutDirection="ltr"
     android:orientation="vertical"
@@ -31,124 +31,127 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_margin="10dp"
-                android:text="My Profile"
+                android:layout_marginTop="30dp"
+                android:text="Thanks to accept our service !"
                 android:textColor="@color/greenApp"
                 android:textSize="20sp" />
+
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_margin="10dp"
+                android:layout_margin="30dp"
                 android:layout_marginHorizontal="20dp"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/shape_with_corner"
                 android:orientation="vertical"
                 android:padding="5dp">
 
-                <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:layout_gravity="center"
-
-                    android:background="@drawable/pro" />
-
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="20dp"
-                    android:layout_marginVertical="5dp"
-                    android:background="@drawable/shape_with_corner"
-                    android:orientation="vertical"
-                    android:padding="5dp">
+                    android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginTop="10dp"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:fontFamily="serif"
                         android:gravity="center_vertical"
-                        android:text="Name : Malak ED"
+                        android:text="Note :"
                         android:textColor="@color/gray_dark_one"
                         android:textSize="17sp" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
+                    <EditText
+                        android:id="@+id/username"
+                        android:layout_width="0dp"
+                        android:layout_height="80dp"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginTop="10dp"
-                        android:layout_weight="1"
-                        android:fontFamily="serif"
+                        android:layout_weight="1.2"
                         android:gravity="center_vertical"
-                        android:text="Car Type : Bicanto"
+                        android:text=""
+                        android:background="@drawable/alpha_frame"
+                        app:backgroundTint="@color/black"
+                        android:nextFocusDown="@id/password"
                         android:textColor="@color/gray_dark_one"
                         android:textSize="17sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginTop="10dp"
-                        android:layout_weight="1"
-                        android:fontFamily="serif"
-                        android:gravity="center_vertical"
-                        android:text="Car Color : Orange"
-                        android:textColor="@color/gray_dark_one"
-                        android:textSize="17sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginTop="10dp"
-                        android:layout_weight="1"
-                        android:fontFamily="serif"
-                        android:gravity="center_vertical"
-                        android:text="Car Number : 015486"
-                        android:textColor="@color/gray_dark_one"
-                        android:textSize="17sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginTop="10dp"
-                        android:layout_weight="1"
-                        android:fontFamily="serif"
-                        android:gravity="center_vertical"
-                        android:text="Car Picture :"
-                        android:textColor="@color/gray_dark_one"
-                        android:textSize="17sp" />
-
-
-                    <ImageView
-                        android:layout_width="300dp"
-                        android:layout_height="150dp"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="20dp"
-                        android:background="@drawable/kia" />
-
                 </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:text="Complain :"
+                        android:textColor="@color/gray_dark_one"
+                        android:textSize="17sp" />
+
+                    <EditText
+                        android:layout_width="0dp"
+                        android:layout_height="80dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1.2"
+                        android:gravity="center_vertical"
+                        android:text=""
+                        android:background="@drawable/alpha_frame"
+                        app:backgroundTint="@color/black"
+                        android:nextFocusDown="@id/password"
+                        android:textColor="@color/gray_dark_one"
+                        android:textSize="17sp" />
+                </LinearLayout>
+
+
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="30dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="Rate Valet :"
+                    android:textColor="@color/gray_dark_one"
+                    android:textSize="17sp" />
+
+            <RatingBar
+                android:id="@+id/rating"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_marginHorizontal="20dp"
+                android:progressBackgroundTint="@color/colorAccent"
+                android:progressTint="@color/preview"
+                android:secondaryProgressTint="@color/greenApp"
+                android:numStars="5"
+                android:stepSize="0.1"
+                android:isIndicator="true" />
+
+            </LinearLayout>
             <Button
-                android:id="@+id/serve"
+                android:id="@+id/submit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginHorizontal="10dp"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="20dp"
                 android:background="@drawable/layout"
                 android:padding="0dp"
                 android:paddingStart="30dp"
                 android:paddingLeft="30dp"
                 android:paddingEnd="30dp"
                 android:paddingRight="30dp"
-                android:text="Edit"
+                android:text="Submit"
                 android:textAllCaps="false"
                 android:textColor="@color/white"
                 android:textSize="20sp" />

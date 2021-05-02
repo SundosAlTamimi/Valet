@@ -3,38 +3,61 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="350dp"
-    android:layout_height="200dp"
+    android:layout_height="180dp"
+    android:background="@color/noColor"
     android:gravity="center"
-    android:background="@drawable/alpha_frame2"
-    android:orientation="vertical"
     android:layoutDirection="ltr"
+    android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="10dp"
-        android:textColor="@color/white"
-        android:text="Request a valet in 'Tag Mall' !"
-        android:textSize="18sp" />
 
-    <Button
-        android:id="@+id/request"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_gravity="center"
-        android:layout_marginVertical="20dp"
-        android:background="@drawable/frame_shape"
-        android:fontFamily="serif"
-        android:paddingStart="30dp"
-        android:paddingLeft="30dp"
-        android:paddingEnd="30dp"
-        android:paddingRight="30dp"
-        android:text="Request"
-        android:textAllCaps="false"
-        android:textColor="@color/white"
-        android:textSize="20sp" />
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="2dp"
+        android:layout_marginBottom="2dp"
+        android:layout_weight="1.5"
+        android:elevation="@dimen/cardview_default_elevation"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="30dp"
+        app:cardElevation="30dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="10dp"
+                android:text="Request a valet in 'Tag Mall' !"
+                android:textColor="@color/gray_dark"
+                android:textSize="22sp" />
+
+            <Button
+                android:id="@+id/request"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="40dp"
+                android:background="@drawable/layout"
+                android:padding="0dp"
+                android:paddingStart="30dp"
+                android:paddingLeft="30dp"
+                android:paddingEnd="30dp"
+                android:paddingRight="30dp"
+                android:text="Request"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 </LinearLayout>
