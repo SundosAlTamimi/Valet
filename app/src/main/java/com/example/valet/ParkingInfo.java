@@ -418,22 +418,14 @@ public class ParkingInfo extends AppCompatActivity implements NavigationView.OnN
                 Clients newClient = new Clients();
                 newClient.setUserName(PublicInfo.name);
                 newClient.setPassword(PublicInfo.password);
-                newClient.setE_mail(PublicInfo.Email);
-                newClient.setPhoneNumber(PublicInfo.number);
-                newClient.setCarType(PublicInfo.carType);
-                newClient.setCarModel(PublicInfo.carModel);
-                newClient.setCarColor(PublicInfo.carColor);
-                newClient.setCarLot(PublicInfo.carNo);
-                newClient.setTime(currentTime);
-                newClient.setDate(currentDate);
-                newClient.setCaptainName(PublicInfo.valetName);
-                newClient.setCaptainNumber(PublicInfo.valetNo);
-
 
                 JSONObject jsonObjectNewClient = newClient.getJSONObject3();
 
                 List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
                 nameValuePairs.add(new BasicNameValuePair("REQUEST_CAR", jsonObjectNewClient.toString().trim()));
+                nameValuePairs.add(new BasicNameValuePair("CLIENT_NAME", PublicInfo.name));
+                nameValuePairs.add(new BasicNameValuePair("CLIENT_NO", PublicInfo.number));
+                nameValuePairs.add(new BasicNameValuePair("CURRENT_DATE", currentDate));
 
                 //Log.e("tag", "" + jsonArrayPics.toString());
 

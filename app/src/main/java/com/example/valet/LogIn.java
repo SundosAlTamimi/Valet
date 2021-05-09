@@ -111,7 +111,7 @@ public class LogIn extends AppCompatActivity {
                     for (int i = 0; i < clientsList.size(); i++) {
 
                         if (userNameLog.getText().toString().equals(clientsList.get(i).getUserName())) {
-                            if (passwordLog.getText().toString().toString().equals(clientsList.get(i).getPassword())) {
+                            if (passwordLog.getText().toString().equals(clientsList.get(i).getPassword())) {
 
                                 PublicInfo.name = clientsList.get(i).getUserName();
                                 PublicInfo.password = clientsList.get(i).getPassword();
@@ -347,7 +347,7 @@ public class LogIn extends AppCompatActivity {
                     JSONArray parentArrayOrders = parentObject.getJSONArray("CLIENTS");
 
                     for (int i = 0; i < parentArrayOrders.length(); i++) {
-                        JSONObject finalObject = parentArrayOrders.getJSONObject(0);
+                        JSONObject finalObject = parentArrayOrders.getJSONObject(i);
 
                         Clients client = new Clients();
                         client.setUserName(finalObject.getString("USERNAME"));

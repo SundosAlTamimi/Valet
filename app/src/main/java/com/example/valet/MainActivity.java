@@ -507,6 +507,8 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
 
                 scan.setVisibility(View.GONE);
 
+                new JSONTask5().execute();
+
                 Intent intent = new Intent(MainActivity.this, ParkingInfo.class);
                 startActivity(intent);
             }
@@ -701,16 +703,19 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
                     JSONArray parentArrayOrders = parentObject.getJSONArray("CAPTAINS_STATUS");
 
                     for (int i = 0; i < parentArrayOrders.length(); i++) {
-                        JSONObject finalObject = parentArrayOrders.getJSONObject(0);
+                        JSONObject finalObject = parentArrayOrders.getJSONObject(i);
 
                         captain = new Captains();
-                        captain.setCaptainName( finalObject.getString("CAPTAIN_NAME"));
-                        captain.setCaptainNumber( finalObject.getString("CAPTAIN_NO"));
-                        captain.setCaptain_rate( finalObject.getString("CAPTAIN_RATE"));
-                        //captain.setCaptainPic( finalObject.getString("CAPTAIN_PIC"));
-                        //captain.setClientName( finalObject.getString("CLIENT_NAME"));
-                        //captain.setClientPhone( finalObject.getString("CLIENT_PHONE"));
-
+                        Log.e("****", finalObject.getString("STATUS") + " " + finalObject.getString("CLIENT_NAME") );
+                        if(finalObject.getString("STATUS").equals("0") && finalObject.getString("CLIENT_NAME").equals(PublicInfo.name)) {
+                            captain.setCaptainName(finalObject.getString("CAPTAIN_NAME"));
+                            captain.setCaptainNumber(finalObject.getString("CAPTAIN_NO"));
+                            captain.setCaptain_rate(finalObject.getString("CAPTAIN_RATE"));
+                            //captain.setCaptainPic( finalObject.getString("CAPTAIN_PIC"));
+                            //captain.setClientName( finalObject.getString("CLIENT_NAME"));
+                            //captain.setClientPhone( finalObject.getString("CLIENT_PHONE"));
+                            break;
+                        }
 //                        client.setPassword( finalObject.getString("CAR_PIC"));
 
                     }
@@ -751,8 +756,10 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
             super.onPostExecute(result);
 
             if (captain != null) {
-                Log.e("Captain", "********" + captain.getCaptainName());
-                valetDialog();
+                if (captain.getCaptainName() != null) {
+                    Log.e("Captain", "********" + captain.getCaptainName());
+                    valetDialog();
+                }
 
             } else {
 //                Toast.makeText(LoginActivity.this, "Not able to fetch data from server, please check url.", Toast.LENGTH_SHORT).show();
@@ -781,6 +788,8 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
 
 
 
+                String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+
                 captain.setClientName(PublicInfo.name);
                 captain.setClientPhone(PublicInfo.number);
 
@@ -790,6 +799,174 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
                 nameValuePairs.add(new BasicNameValuePair("ACCEPT_CAPTAIN", jsonObjectCaptain.toString().trim()));
                 nameValuePairs.add(new BasicNameValuePair("CLIENT_NAME", PublicInfo.name));
                 nameValuePairs.add(new BasicNameValuePair("CLIENT_NO", PublicInfo.number));
+                nameValuePairs.add(new BasicNameValuePair("CURRENT_DATE", currentDate));
+                nameValuePairs.add(new BasicNameValuePair("CAPTAIN_NAME", captain.getCaptainName()));
+                nameValuePairs.add(new BasicNameValuePair("CAPTAIN_No", captain.getCaptainNumber()));
+
+
+                //Log.e("tag", "" + jsonArrayPics.toString());
+
+                request.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+                HttpResponse response = client.execute(request);
+
+                BufferedReader in = new BufferedReader(new
+                        InputStreamReader(response.getEntity().getContent()));
+
+                StringBuffer sb = new StringBuffer("");
+                String line = "";
+
+                while ((line = in.readLine()) != null) {
+                    sb.append(line);
+                }
+
+                in.close();
+
+                JsonResponse = sb.toString();
+                Log.e("*****", JsonResponse);
+
+                return JsonResponse;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            if (s != null) {
+                if (s.contains("ACCEPT_CAPTAIN SUCCESS")) {
+
+                    Log.e("tag", "****Success");
+                } else {
+                    Log.e("tag", "****Failed to export data");
+                }
+            } else {
+                Log.e("tag", "****Failed to export data Please check internet connection");
+            }
+        }
+    }
+
+
+    private class JSONTask4 extends AsyncTask<String, String, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+
+                String JsonResponse = null;
+                HttpClient client = new DefaultHttpClient();
+                HttpPost request = new HttpPost();
+                request.setURI(new URI("http://5.189.130.98:8085/exportt.php"));
+
+
+                String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+
+
+                captain.setClientName(PublicInfo.name);
+                captain.setClientPhone(PublicInfo.number);
+
+                JSONObject jsonObjectCaptain = captain.getJSONObject();
+
+                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
+                nameValuePairs.add(new BasicNameValuePair("REJECT_CAPTAIN", jsonObjectCaptain.toString().trim()));
+                nameValuePairs.add(new BasicNameValuePair("CLIENT_NAME", PublicInfo.name));
+                nameValuePairs.add(new BasicNameValuePair("CLIENT_NO", PublicInfo.number));
+                nameValuePairs.add(new BasicNameValuePair("CURRENT_DATE", currentDate));
+                nameValuePairs.add(new BasicNameValuePair("CAPTAIN_NAME", captain.getCaptainName()));
+                nameValuePairs.add(new BasicNameValuePair("CAPTAIN_No", captain.getCaptainNumber()));
+
+
+                //Log.e("tag", "" + jsonArrayPics.toString());
+
+                request.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+                HttpResponse response = client.execute(request);
+
+                BufferedReader in = new BufferedReader(new
+                        InputStreamReader(response.getEntity().getContent()));
+
+                StringBuffer sb = new StringBuffer("");
+                String line = "";
+
+                while ((line = in.readLine()) != null) {
+                    sb.append(line);
+                }
+
+                in.close();
+
+                JsonResponse = sb.toString();
+
+                Log.e("****", JsonResponse);
+
+                return JsonResponse;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            if (s != null) {
+                if (s.contains("REJECT_CAPTAIN SUCCESS")) {
+
+                    new JSONTask2().execute();
+                    Log.e("tag", "****Success");
+                } else {
+                    Log.e("tag", "****Failed to export data");
+                }
+            } else {
+                Log.e("tag", "****Failed to export data Please check internet connection");
+            }
+        }
+    }
+
+
+    private class JSONTask5 extends AsyncTask<String, String, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+
+                String JsonResponse = null;
+                HttpClient client = new DefaultHttpClient();
+                HttpPost request = new HttpPost();
+                request.setURI(new URI("http://5.189.130.98:8085/exportt.php"));
+
+
+                String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+                String currentTime = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
+
+                captain.setClientName(PublicInfo.name);
+                captain.setClientPhone(PublicInfo.number);
+
+                JSONObject jsonObjectCaptain = captain.getJSONObject();
+
+                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
+                nameValuePairs.add(new BasicNameValuePair("CAR_PARKED", jsonObjectCaptain.toString().trim()));
+                nameValuePairs.add(new BasicNameValuePair("CLIENT_NAME", PublicInfo.name));
+                nameValuePairs.add(new BasicNameValuePair("CLIENT_NO", PublicInfo.number));
+                nameValuePairs.add(new BasicNameValuePair("CURRENT_DATE", currentDate));
+                nameValuePairs.add(new BasicNameValuePair("CURRENT_TIE", currentTime));
 
 
                 //Log.e("tag", "" + jsonArrayPics.toString());
@@ -824,7 +1001,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             if (s != null) {
-                if (s.contains("ACCEPT_CAPTAIN SUCCESS")) {
+                if (s.contains("REJECT_CAPTAIN SUCCESS")) {
 
                     Log.e("tag", "****Success");
                 } else {
@@ -867,6 +1044,9 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                new JSONTask4().execute();
+
                 dialog2.dismiss();
             }
         });
