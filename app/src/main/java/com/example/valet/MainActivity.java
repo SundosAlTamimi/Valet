@@ -10,6 +10,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -105,6 +106,10 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
     double v1 = 31.969570, v2 = 35.914191;
     double a1 = 31.968420, a2 = 35.916258;
 
+    LatLng reqLatLong;
+
+    DBHandler dbHandler;
+
     public static String[] parts ;
 
 
@@ -119,6 +124,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        dbHandler = new DBHandler(this);
         scan = findViewById(R.id.scan);
         nDrawerLayout = findViewById(R.id.nav_view);
         Spinner loc = findViewById(R.id.loc);
@@ -150,6 +156,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
                     mMap.addMarker(new MarkerOptions().position(latLng).title(location));
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng , 15));
 
+                    reqLatLong = latLng;
                     //Log.e("*****" ,  getAddressName(MainActivity.this , address.getLatitude() ,  address.getLongitude()));
 
 
@@ -410,7 +417,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        progressDialog.dismiss();
+                        //progressDialog.dismiss();
 
                         new JSONTask2().execute();
 
@@ -426,6 +433,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
 
     }
 
+    @SuppressLint("SetTextI18n")
     void scanDialog(){
 
         Dialog dialog3 = new Dialog(MainActivity.this);
@@ -434,6 +442,9 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
         dialog3.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog3.getWindow().getAttributes().windowAnimations = R.style.DialogTheme; //style id
 
+
+        TextView textView = dialog3.findViewById(R.id.tt);
+        textView.setText(captain.getCaptainName() +" is waiting for you !");
 
         Button scan = dialog3.findViewById(R.id.scan);
 
@@ -503,8 +514,9 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
 
                 barcodeValue = Result.getContents();
 
-                parts = barcodeValue.split("-");
 
+                parts = barcodeValue.split("/");
+//39.96430206305241/21.65560942143202/+962222222222/+962222222222/13:51:55
                 scan.setVisibility(View.GONE);
 
                 new JSONTask5().execute();
@@ -595,15 +607,17 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
                 String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
                 String currentTime = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
 
+                Clients clientDB = dbHandler.getUSER_INFO();
+
                 Clients newClient = new Clients();
-                newClient.setUserName(PublicInfo.name);
-                newClient.setPassword(PublicInfo.password);
-                newClient.setE_mail(PublicInfo.Email);
-                newClient.setPhoneNumber(PublicInfo.number);
-                newClient.setCarType(PublicInfo.carType);
-                newClient.setCarModel(PublicInfo.carModel);
-                newClient.setCarColor(PublicInfo.carColor);
-                newClient.setCarLot(PublicInfo.carNo);
+                newClient.setUserName(clientDB.getUserName());
+                newClient.setPassword(clientDB.getPassword());
+                newClient.setE_mail(clientDB.getE_mail());
+                newClient.setPhoneNumber(clientDB.getPhoneNumber());
+                newClient.setCarType(clientDB.getCarType());
+                newClient.setCarModel(clientDB.getCarModel());
+                newClient.setCarColor(clientDB.getCarColor());
+                newClient.setCarLot(clientDB.getCarLot());
                 newClient.setTime(currentTime);
                 newClient.setDate(currentDate);
                 newClient.setLatitude(latitude);
@@ -698,6 +712,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
 
                 JSONObject parentObject = new JSONObject(finalJson);
 
+                String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
 
                 try {
                     JSONArray parentArrayOrders = parentObject.getJSONArray("CAPTAINS_STATUS");
@@ -707,7 +722,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
 
                         captain = new Captains();
                         Log.e("****", finalObject.getString("STATUS") + " " + finalObject.getString("CLIENT_NAME") );
-                        if(finalObject.getString("STATUS").equals("0") && finalObject.getString("CLIENT_NAME").equals(PublicInfo.name)) {
+                        if(finalObject.getString("DATE_").equals(currentDate) && finalObject.getString("STATUS").equals("0") && finalObject.getString("CLIENT_NAME").equals(dbHandler.getName())) {
                             captain.setCaptainName(finalObject.getString("CAPTAIN_NAME"));
                             captain.setCaptainNumber(finalObject.getString("CAPTAIN_NO"));
                             captain.setCaptain_rate(finalObject.getString("CAPTAIN_RATE"));
@@ -758,10 +773,21 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
             if (captain != null) {
                 if (captain.getCaptainName() != null) {
                     Log.e("Captain", "********" + captain.getCaptainName());
+                    progressDialog.dismiss();
                     valetDialog();
+                } else {
+                    Log.e("Captain", "********else" );
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            new JSONTask2().execute();
+
+                        }
+                    }, 6000);
                 }
 
             } else {
+
 //                Toast.makeText(LoginActivity.this, "Not able to fetch data from server, please check url.", Toast.LENGTH_SHORT).show();
             }
         }
@@ -790,15 +816,15 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
 
                 String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
 
-                captain.setClientName(PublicInfo.name);
-                captain.setClientPhone(PublicInfo.number);
+                captain.setClientName(dbHandler.getUSER_INFO().getUserName());
+                captain.setClientPhone(dbHandler.getUSER_INFO().getPhoneNumber());
 
                 JSONObject jsonObjectCaptain = captain.getJSONObject();
 
                 List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
                 nameValuePairs.add(new BasicNameValuePair("ACCEPT_CAPTAIN", jsonObjectCaptain.toString().trim()));
-                nameValuePairs.add(new BasicNameValuePair("CLIENT_NAME", PublicInfo.name));
-                nameValuePairs.add(new BasicNameValuePair("CLIENT_NO", PublicInfo.number));
+                nameValuePairs.add(new BasicNameValuePair("CLIENT_NAME", captain.getClientName()));
+                nameValuePairs.add(new BasicNameValuePair("CLIENT_NO", captain.getClientPhone()));
                 nameValuePairs.add(new BasicNameValuePair("CURRENT_DATE", currentDate));
                 nameValuePairs.add(new BasicNameValuePair("CAPTAIN_NAME", captain.getCaptainName()));
                 nameValuePairs.add(new BasicNameValuePair("CAPTAIN_No", captain.getCaptainNumber()));
@@ -872,15 +898,15 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
                 String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
 
 
-                captain.setClientName(PublicInfo.name);
-                captain.setClientPhone(PublicInfo.number);
+                captain.setClientName(dbHandler.getUSER_INFO().getUserName());
+                captain.setClientPhone(dbHandler.getUSER_INFO().getUserName());
 
                 JSONObject jsonObjectCaptain = captain.getJSONObject();
 
                 List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
                 nameValuePairs.add(new BasicNameValuePair("REJECT_CAPTAIN", jsonObjectCaptain.toString().trim()));
-                nameValuePairs.add(new BasicNameValuePair("CLIENT_NAME", PublicInfo.name));
-                nameValuePairs.add(new BasicNameValuePair("CLIENT_NO", PublicInfo.number));
+                nameValuePairs.add(new BasicNameValuePair("CLIENT_NAME", captain.getClientName()));
+                nameValuePairs.add(new BasicNameValuePair("CLIENT_NO", captain.getClientPhone()));
                 nameValuePairs.add(new BasicNameValuePair("CURRENT_DATE", currentDate));
                 nameValuePairs.add(new BasicNameValuePair("CAPTAIN_NAME", captain.getCaptainName()));
                 nameValuePairs.add(new BasicNameValuePair("CAPTAIN_No", captain.getCaptainNumber()));
@@ -922,6 +948,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
             if (s != null) {
                 if (s.contains("REJECT_CAPTAIN SUCCESS")) {
 
+                    progressDialog.show();
                     new JSONTask2().execute();
                     Log.e("tag", "****Success");
                 } else {
@@ -956,15 +983,15 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
                 String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
                 String currentTime = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
 
-                captain.setClientName(PublicInfo.name);
-                captain.setClientPhone(PublicInfo.number);
+                captain.setClientName(dbHandler.getUSER_INFO().getUserName());
+                captain.setClientPhone(dbHandler.getUSER_INFO().getUserName());
 
                 JSONObject jsonObjectCaptain = captain.getJSONObject();
 
                 List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
                 nameValuePairs.add(new BasicNameValuePair("CAR_PARKED", jsonObjectCaptain.toString().trim()));
-                nameValuePairs.add(new BasicNameValuePair("CLIENT_NAME", PublicInfo.name));
-                nameValuePairs.add(new BasicNameValuePair("CLIENT_NO", PublicInfo.number));
+                nameValuePairs.add(new BasicNameValuePair("CLIENT_NAME", captain.getClientName()));
+                nameValuePairs.add(new BasicNameValuePair("CLIENT_NO", captain.getClientPhone()));
                 nameValuePairs.add(new BasicNameValuePair("CURRENT_DATE", currentDate));
                 nameValuePairs.add(new BasicNameValuePair("CURRENT_TIE", currentTime));
 

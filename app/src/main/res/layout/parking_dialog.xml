@@ -39,7 +39,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginTop="150dp"
+                    android:layout_marginTop="130dp"
                     android:fontFamily="serif"
                     android:text="Your car is safely parked !"
                     android:textColor="@color/preview"
@@ -74,7 +74,7 @@
                         <TextView
                             android:id="@+id/location"
                             android:layout_width="wrap_content"
-                            android:layout_height="0dp"
+                            android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:layout_weight="1"
                             android:fontFamily="serif"
@@ -87,7 +87,7 @@
                         <TextView
                             android:id="@+id/valet_name"
                             android:layout_width="wrap_content"
-                            android:layout_height="0dp"
+                            android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:layout_marginTop="25dp"
                             android:layout_weight="1"

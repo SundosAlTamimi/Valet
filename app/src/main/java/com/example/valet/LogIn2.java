@@ -46,7 +46,7 @@ public class LogIn2 extends AppCompatActivity {
         t2 = findViewById(R.id.t2);
         name = findViewById(R.id.name);
 
-        name.setText( "Welcome " +  PublicInfo.name);
+        name.setText( "Welcome " +  new DBHandler(this).getName());
 
         left.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("UseCompatLoadingForDrawables")

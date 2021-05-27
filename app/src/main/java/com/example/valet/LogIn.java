@@ -77,16 +77,15 @@ public class LogIn extends AppCompatActivity {
     public static final int PICK_IMAGE = 1;
     int flag;
 
-    private static final int REQUEST_EXTERNAL_STORAGE = 1;
-    private static String[] PERMISSIONS_STORAGE = {Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    DBHandler dbHandler;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
 
-        // getSupportActionBar().hide();
+        dbHandler = new DBHandler(this);
 
         logIn = findViewById(R.id.logInButton);
         signUp = findViewById(R.id.sign_up);
@@ -113,13 +112,23 @@ public class LogIn extends AppCompatActivity {
                         if (userNameLog.getText().toString().equals(clientsList.get(i).getUserName())) {
                             if (passwordLog.getText().toString().equals(clientsList.get(i).getPassword())) {
 
-                                PublicInfo.name = clientsList.get(i).getUserName();
-                                PublicInfo.password = clientsList.get(i).getPassword();
-                                PublicInfo.Email = clientsList.get(i).getE_mail();
-                                PublicInfo.number = clientsList.get(i).getPhoneNumber();
-                                PublicInfo.carType = clientsList.get(i).getCarType();
-                                PublicInfo.name = clientsList.get(i).getUserName();
-                                PublicInfo.name = clientsList.get(i).getUserName();
+
+                                dbHandler.addUserInfo(clientsList.get(i).getUserName(),
+                                        clientsList.get(i).getPassword(),
+                                        clientsList.get(i).getE_mail(),
+                                        clientsList.get(i).getPhoneNumber(),
+                                        clientsList.get(i).getCarType(),
+                                        clientsList.get(i).getCarModel(),
+                                        clientsList.get(i).getCarColor(),
+                                        clientsList.get(i).getCarLot(),
+                                        "taps");
+
+//                                PublicInfo.name = clientsList.get(i).getUserName();
+//                                PublicInfo.password = clientsList.get(i).getPassword();
+//                                PublicInfo.Email = clientsList.get(i).getE_mail();
+//                                PublicInfo.number = clientsList.get(i).getPhoneNumber();
+//                                PublicInfo.carType = clientsList.get(i).getCarType();
+
 
                                 Intent intent = new Intent(LogIn.this, LogIn2.class);
                                 startActivity(intent);
@@ -209,14 +218,24 @@ public class LogIn extends AppCompatActivity {
                                         if (!TextUtils.isEmpty(TcarColor.getText().toString())) {
                                             if (!TextUtils.isEmpty(TcarNo.getText().toString())) {
 
-                                                PublicInfo.name = Tname.getText().toString();
-                                                PublicInfo.password = Tpassword.getText().toString();
-                                                PublicInfo.Email = TEmail.getText().toString();
-                                                PublicInfo.number = Tnumber.getText().toString();
-                                                PublicInfo.type = Tname.getText().toString();
-                                                PublicInfo.carType = TcarType.getText().toString();
-                                                PublicInfo.carColor = TcarColor.getText().toString();
-                                                PublicInfo.carNo = TcarNo.getText().toString();
+//                                                PublicInfo.name = Tname.getText().toString();
+//                                                PublicInfo.password = Tpassword.getText().toString();
+//                                                PublicInfo.Email = TEmail.getText().toString();
+//                                                PublicInfo.number = Tnumber.getText().toString();
+//                                                PublicInfo.type = Tname.getText().toString();
+//                                                PublicInfo.carType = TcarType.getText().toString();
+//                                                PublicInfo.carColor = TcarColor.getText().toString();
+//                                                PublicInfo.carNo = TcarNo.getText().toString();
+
+                                                dbHandler.addUserInfo(Tname.getText().toString(),
+                                                        Tpassword.getText().toString(),
+                                                        TEmail.getText().toString(),
+                                                        Tnumber.getText().toString(),
+                                                        TcarType.getText().toString(),
+                                                        "model",
+                                                        TcarColor.getText().toString(),
+                                                        TcarNo.getText().toString(),
+                                                        "taps");
 
 
                                                 Intent intent = new Intent(LogIn.this, LogIn2.class);
@@ -428,18 +447,18 @@ public class LogIn extends AppCompatActivity {
 
                 String newCust = "";
 
-                Clients newClient = new Clients();
-                newClient.setUserName(PublicInfo.name);
-                newClient.setPassword(PublicInfo.password);
-                newClient.setE_mail(PublicInfo.Email);
-                newClient.setPhoneNumber(PublicInfo.number);
-                newClient.setCarType(PublicInfo.carType);
-                newClient.setCarModel(PublicInfo.carModel);
-                newClient.setCarColor(PublicInfo.carColor);
-                newClient.setCarLot(PublicInfo.carNo);
+//                Clients newClient = new Clients();
+//                newClient.setUserName(PublicInfo.name);
+//                newClient.setPassword(PublicInfo.password);
+//                newClient.setE_mail(PublicInfo.Email);
+//                newClient.setPhoneNumber(PublicInfo.number);
+//                newClient.setCarType(PublicInfo.carType);
+//                newClient.setCarModel(PublicInfo.carModel);
+//                newClient.setCarColor(PublicInfo.carColor);
+//                newClient.setCarLot(PublicInfo.carNo);
 
 
-                JSONObject jsonObjectNewClient = newClient.getJSONObject();
+                JSONObject jsonObjectNewClient = dbHandler.getUSER_INFO().getJSONObject();
 
                 List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
                 nameValuePairs.add(new BasicNameValuePair("NEW_CLIENT", jsonObjectNewClient.toString().trim()));
