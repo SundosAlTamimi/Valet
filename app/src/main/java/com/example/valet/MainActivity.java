@@ -108,7 +108,9 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
 
     LatLng reqLatLong;
 
+    public static String serialOfRaw="";
     DBHandler dbHandler;
+    Dialog dialogValet;
 
     public static String[] parts ;
 
@@ -151,16 +153,20 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
                         e.printStackTrace();
                     }
 
-                    Address address = addressList.get(0);
-                    LatLng latLng = new LatLng(address.getLatitude() , address.getLongitude());
-                    mMap.addMarker(new MarkerOptions().position(latLng).title(location));
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng , 15));
+                    try {
+                        Address address = addressList.get(0);
+                        LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+                        mMap.addMarker(new MarkerOptions().position(latLng).title(location));
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
 
-                    reqLatLong = latLng;
-                    //Log.e("*****" ,  getAddressName(MainActivity.this , address.getLatitude() ,  address.getLongitude()));
+                        reqLatLong = latLng;
+                        //Log.e("*****" ,  getAddressName(MainActivity.this , address.getLatitude() ,  address.getLongitude()));
 
 
-                    mMap.setOnMarkerClickListener(MainActivity.this);
+                        mMap.setOnMarkerClickListener(MainActivity.this);
+                    }catch (Exception e){
+                        Log.e("master","error");
+                    }
                 }
 
 
@@ -206,6 +212,8 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
         });
 
 
+        Timer();
+
 //        MaterialToolbar mTopToolbar = (MaterialToolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(mTopToolbar);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -224,6 +232,36 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
         navigationView.setNavigationItemSelectedListener(this);
 
 
+    }
+
+
+    void Timer() {
+
+       Timer T = new Timer();
+        T.scheduleAtFixedRate(new TimerTask() {
+            @SuppressLint("LongLogTag")
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public void run() {
+
+                Handler h = new Handler(Looper.getMainLooper());
+                h.post(new Runnable() {
+                    public void run() {
+                        Log.e("mm", "in 123123");
+                        Handler h = new Handler(Looper.getMainLooper());
+                        h.post(new Runnable() {
+                            @SuppressLint("SetTextI18n")
+                            public void run() {
+
+                           new  JSONTask2().execute();
+                            }
+                        });
+                    }
+                });
+
+
+            }
+        }, 10, 1000);
     }
 
     private void initialization() {
@@ -414,16 +452,16 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
                 progressDialog.setMessage("Waiting for valet...");
                 progressDialog.show();
 
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        //progressDialog.dismiss();
-
-                        new JSONTask2().execute();
-
-
-                    }
-                }, 6000);
+//                new Handler().postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        //progressDialog.dismiss();
+//
+//                        new JSONTask2().execute();
+//
+//
+//                    }
+//                }, 6000);
 
 
                 dialog.dismiss();
@@ -726,6 +764,8 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
                             captain.setCaptainName(finalObject.getString("CAPTAIN_NAME"));
                             captain.setCaptainNumber(finalObject.getString("CAPTAIN_NO"));
                             captain.setCaptain_rate(finalObject.getString("CAPTAIN_RATE"));
+                            captain.setSerial( finalObject.getString("SERIAL"));
+                            serialOfRaw=captain.getSerial();
                             //captain.setCaptainPic( finalObject.getString("CAPTAIN_PIC"));
                             //captain.setClientName( finalObject.getString("CLIENT_NAME"));
                             //captain.setClientPhone( finalObject.getString("CLIENT_PHONE"));
@@ -773,17 +813,38 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
             if (captain != null) {
                 if (captain.getCaptainName() != null) {
                     Log.e("Captain", "********" + captain.getCaptainName());
-                    progressDialog.dismiss();
-                    valetDialog();
+
+                    try {
+                        progressDialog.dismiss();
+                    }catch (Exception e){
+                        Log.e("Ex","error");
+                    }
+                    try {
+
+if(dialogValet!=null) {
+    if (dialogValet.isShowing()) {
+        Log.e("Ex", "errors" + dialogValet.isShowing());
+    } else {
+        Log.e("Ex2", "error" + dialogValet.isShowing());
+        valetDialog();
+        dialogValet.show();
+    }
+}else {
+    valetDialog();
+}
+                }catch (Exception e){
+                    Log.e("Ex","errore");
+                }
+
                 } else {
                     Log.e("Captain", "********else" );
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            new JSONTask2().execute();
-
-                        }
-                    }, 6000);
+//                    new Handler().postDelayed(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            new JSONTask2().execute();
+//
+//                        }
+//                    }, 6000);
                 }
 
             } else {
@@ -828,7 +889,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
                 nameValuePairs.add(new BasicNameValuePair("CURRENT_DATE", currentDate));
                 nameValuePairs.add(new BasicNameValuePair("CAPTAIN_NAME", captain.getCaptainName()));
                 nameValuePairs.add(new BasicNameValuePair("CAPTAIN_No", captain.getCaptainNumber()));
-
+                nameValuePairs.add(new BasicNameValuePair("SERIAL", captain.getSerial()));
 
                 //Log.e("tag", "" + jsonArrayPics.toString());
 
@@ -899,7 +960,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
 
 
                 captain.setClientName(dbHandler.getUSER_INFO().getUserName());
-                captain.setClientPhone(dbHandler.getUSER_INFO().getUserName());
+                captain.setClientPhone(dbHandler.getUSER_INFO().getPhoneNumber());
 
                 JSONObject jsonObjectCaptain = captain.getJSONObject();
 
@@ -910,6 +971,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
                 nameValuePairs.add(new BasicNameValuePair("CURRENT_DATE", currentDate));
                 nameValuePairs.add(new BasicNameValuePair("CAPTAIN_NAME", captain.getCaptainName()));
                 nameValuePairs.add(new BasicNameValuePair("CAPTAIN_No", captain.getCaptainNumber()));
+                nameValuePairs.add(new BasicNameValuePair("SERIAL", captain.getSerial()));
 
 
                 //Log.e("tag", "" + jsonArrayPics.toString());
@@ -948,8 +1010,14 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
             if (s != null) {
                 if (s.contains("REJECT_CAPTAIN SUCCESS")) {
 
-                    progressDialog.show();
-                    new JSONTask2().execute();
+                    try {
+                        progressDialog.show();
+                    }catch (Exception E)
+                    {
+                        Log.e("tag", "****Ex Success");
+                    }
+
+                    //new JSONTask2().execute();
                     Log.e("tag", "****Success");
                 } else {
                     Log.e("tag", "****Failed to export data");
@@ -984,7 +1052,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
                 String currentTime = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
 
                 captain.setClientName(dbHandler.getUSER_INFO().getUserName());
-                captain.setClientPhone(dbHandler.getUSER_INFO().getUserName());
+                captain.setClientPhone(dbHandler.getUSER_INFO().getPhoneNumber());
 
                 JSONObject jsonObjectCaptain = captain.getJSONObject();
 
@@ -1043,30 +1111,33 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
 
     void valetDialog(){
 
-        Dialog dialog2 = new Dialog(MainActivity.this);
-        dialog2.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog2.setContentView(R.layout.valet_dialog);
-        dialog2.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog2.getWindow().getAttributes().windowAnimations = R.style.DialogTheme; //style id
+        dialogValet = new Dialog(MainActivity.this);
+        dialogValet.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialogValet.setContentView(R.layout.valet_dialog);
+        dialogValet.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialogValet.getWindow().getAttributes().windowAnimations = R.style.DialogTheme; //style id
 
 
-        TextView name = dialog2.findViewById(R.id.name);
-        TextView phone = dialog2.findViewById(R.id.phone);
-        RatingBar rate = dialog2.findViewById(R.id.rating);
+        TextView name = dialogValet.findViewById(R.id.name);
+        TextView phone = dialogValet.findViewById(R.id.phone);
+        RatingBar rate = dialogValet.findViewById(R.id.rating);
 
-        name.setText("Name :" + captain.getCaptainName());
-        phone.setText("Phone # :" + captain.getCaptainNumber());
-        int rat = Integer.parseInt(captain.getCaptain_rate());
-        rate.setRating(rat);
+        try {
+            name.setText("Name :" + captain.getCaptainName());
+            phone.setText("Phone # :" + captain.getCaptainNumber());
+            int rat = Integer.parseInt(captain.getCaptain_rate());
+            rate.setRating(rat);
+        }catch (Exception e){
 
+        }
 /*
         name.setText(captain.getCaptainName());
         phone.setText(captain.getCaptainNumber());
         rate.setRating(Integer.parseInt(captain.getCaptain_rate()));
 */
 
-        Button req = dialog2.findViewById(R.id.request);
-        Button cancel = dialog2.findViewById(R.id.cancel);
+        Button req = dialogValet.findViewById(R.id.request);
+        Button cancel = dialogValet.findViewById(R.id.cancel);
 
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1074,7 +1145,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
 
                 new JSONTask4().execute();
 
-                dialog2.dismiss();
+                dialogValet.dismiss();
             }
         });
 
@@ -1085,7 +1156,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
 
                 new JSONTask3().execute();
 
-                dialog2.dismiss();
+                dialogValet.dismiss();
 
                 initialization();
 
@@ -1093,7 +1164,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
 
             }
         });
-        dialog2.show();
+      //  dialogValet.show();
 
     }
 

@@ -16,6 +16,8 @@ public class Captains {
     public String clientName;
     public String clientPhone;
 
+    public String serial;
+
     public Captains(String captainName, String captain_rate, String captainNumber, String captainPic) {
         this.captainName = captainName;
         this.captain_rate = captain_rate;
@@ -73,6 +75,14 @@ public class Captains {
 
     public void setClientPhone(String clientPhone) {
         this.clientPhone = clientPhone;
+    }
+
+    public String getSerial() {
+        return serial;
+    }
+
+    public void setSerial(String serial) {
+        this.serial = serial;
     }
 
     public JSONObject getJSONObject() {
