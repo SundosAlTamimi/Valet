@@ -269,7 +269,7 @@ public class ParkingInfo extends AppCompatActivity implements NavigationView.OnN
 
     void paymentDialog(String[] parts) {
 
-        Dialog dialog2 = new Dialog(ParkingInfo.this);
+        Dialog dialog2 = new Dialog(ParkingInfo.this,R.style.Theme_Dialog);
         dialog2.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog2.setContentView(R.layout.pay);
         dialog2.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
