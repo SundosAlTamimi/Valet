@@ -30,27 +30,31 @@
             android:padding="2dp"
             android:orientation="vertical">
 
-            <LinearLayout
+            <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="match_parent">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="130dp"
-                    android:fontFamily="serif"
-                    android:text="Your car is safely parked !"
-                    android:textColor="@color/preview"
-                    android:textSize="25sp" />
+                    android:orientation="vertical">
 
-                <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_gravity="center"
-                    android:background="@drawable/valet_man" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="130dp"
+                        android:fontFamily="serif"
+                        android:text="Your car is safely parked !"
+                        android:textColor="@color/preview"
+                        android:textSize="25sp" />
+
+                    <ImageView
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="20dp"
+                        android:background="@drawable/valet_man" />
 
 
                 <LinearLayout
@@ -98,52 +102,53 @@
                             android:textColor="@color/black"
                             android:textSize="20sp" />
 
-                        <TextView
-                            android:id="@+id/phone"
-                            android:layout_width="wrap_content"
-                            android:layout_height="0dp"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginTop="25dp"
-                            android:layout_weight="1"
-                            android:fontFamily="serif"
-                            android:gravity="center_vertical"
-                            android:text="Phone # : 07966625834"
-                            android:textColor="@color/black"
-                            android:textSize="20sp" />
+                            <TextView
+                                android:id="@+id/phone"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginTop="25dp"
+                                android:layout_weight="1"
+                                android:fontFamily="serif"
+                                android:gravity="center_vertical"
+                                android:text="Phone # : 07966625834"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
 
 
-                        <TextView
-                            android:id="@+id/time"
-                            android:layout_width="wrap_content"
-                            android:layout_height="0dp"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginTop="25dp"
-                            android:layout_weight="1"
-                            android:fontFamily="serif"
-                            android:gravity="center_vertical"
-                            android:text="Time Of Parking : 10:45 am"
-                            android:textColor="@color/black"
-                            android:textSize="20sp" />
+                            <TextView
+                                android:id="@+id/time"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginTop="25dp"
+                                android:layout_weight="1"
+                                android:fontFamily="serif"
+                                android:gravity="center_vertical"
+                                android:text="Time Of Parking : 10:45 am"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
 
 
+                        </LinearLayout>
                     </LinearLayout>
+
+                    <Button
+                        android:id="@+id/equestCar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
+                        android:layout_marginHorizontal="20dp"
+                        android:layout_marginTop="100dp"
+                        android:background="@drawable/layout"
+                        android:padding="10dp"
+                        android:text="I need my car"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="16sp" />
+
                 </LinearLayout>
-
-                <Button
-                    android:id="@+id/equestCar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:layout_marginTop="100dp"
-                    android:layout_marginHorizontal="20dp"
-                    android:background="@drawable/layout"
-                    android:padding="10dp"
-                    android:text="I need my car"
-                    android:textAllCaps="false"
-                    android:textColor="@color/white"
-                    android:textSize="16sp" />
-
-            </LinearLayout>
+            </ScrollView>
 
 
         </LinearLayout>

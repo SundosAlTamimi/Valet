@@ -7,8 +7,10 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -50,6 +53,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import static com.example.valet.MainActivity.serialOfRaw;
 
 public class ParkingInfo extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -64,11 +71,11 @@ public class ParkingInfo extends AppCompatActivity implements NavigationView.OnN
     String timeToArrive = "";
     boolean ready = false;
 
-    Dialog dialog2;
     DBHandler dbHandler;
 
     public static String GLOBAL_STATUS = "0";
 
+    Dialog dialog2,  dialog3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,6 +137,8 @@ public class ParkingInfo extends AppCompatActivity implements NavigationView.OnN
                 findViewById(R.id.nav_view);
 
         navigationView.setNavigationItemSelectedListener(this);
+
+        Timer();
 
     }
 
@@ -316,7 +325,7 @@ public class ParkingInfo extends AppCompatActivity implements NavigationView.OnN
 
     void paymentDialog(String[] parts) {
 
-        Dialog dialog2 = new Dialog(ParkingInfo.this);
+        Dialog dialog2 = new Dialog(ParkingInfo.this,R.style.Theme_Dialog);
         dialog2.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog2.setContentView(R.layout.pay);
         dialog2.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -356,10 +365,9 @@ public class ParkingInfo extends AppCompatActivity implements NavigationView.OnN
                 submit.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
-                        Intent intent = new Intent(ParkingInfo.this, LogIn2.class);
-                        startActivity(intent);
                         dialog.dismiss();
+                        new PAY_JSONTask().execute();
+
                     }
                 });
 
@@ -405,7 +413,8 @@ public class ParkingInfo extends AppCompatActivity implements NavigationView.OnN
                 nameValuePairs.add(new BasicNameValuePair("CLIENT_NAME", newClient.getUserName()));
                 nameValuePairs.add(new BasicNameValuePair("CLIENT_NO", newClient.getPhoneNumber()));
                 nameValuePairs.add(new BasicNameValuePair("CURRENT_DATE", currentDate));
-
+                nameValuePairs.add(new BasicNameValuePair("SERIAL", serialOfRaw));
+                Log.e("serialOfRaw",""+serialOfRaw);
                 //Log.e("tag", "" + jsonArrayPics.toString());
 
                 request.setEntity(new UrlEncodedFormEntity(nameValuePairs));
@@ -443,13 +452,98 @@ public class ParkingInfo extends AppCompatActivity implements NavigationView.OnN
 
                     Log.e("tag", "****Success");
 
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            new JSONTask2().execute();
+//                    new Handler().postDelayed(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            new JSONTask2().execute();
+//
+//                        }
+//                    }, 6000);
 
-                        }
-                    }, 6000);
+                } else {
+                    Log.e("tag", "****Failed to export data");
+                }
+            } else {
+                Log.e("tag", "****Failed to export data Please check internet connection");
+            }
+        }
+    }
+
+    private class PAY_JSONTask extends AsyncTask<String, String, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+
+                String JsonResponse = null;
+                HttpClient client = new DefaultHttpClient();
+                HttpPost request = new HttpPost();
+                request.setURI(new URI("http://5.189.130.98:8085/exportt.php"));
+
+
+                String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+                String currentTime = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
+
+                Clients newClient = new Clients();
+                newClient.setUserName(new DBHandler(ParkingInfo.this).getUSER_INFO().getUserName());
+                newClient.setPhoneNumber(new DBHandler(ParkingInfo.this).getUSER_INFO().getPhoneNumber());
+
+                JSONObject jsonObjectNewClient = newClient.getJSONObject3();
+
+                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
+                nameValuePairs.add(new BasicNameValuePair("PAY_CAR", jsonObjectNewClient.toString().trim()));
+                nameValuePairs.add(new BasicNameValuePair("CLIENT_NAME", newClient.getUserName()));
+                nameValuePairs.add(new BasicNameValuePair("CLIENT_NO", newClient.getPhoneNumber()));
+                nameValuePairs.add(new BasicNameValuePair("CURRENT_DATE", currentDate));
+                nameValuePairs.add(new BasicNameValuePair("SERIAL", serialOfRaw));
+                Log.e("serialOfRaw",""+serialOfRaw);
+                //Log.e("tag", "" + jsonArrayPics.toString());
+
+                request.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+                HttpResponse response = client.execute(request);
+
+                BufferedReader in = new BufferedReader(new
+                        InputStreamReader(response.getEntity().getContent()));
+
+                StringBuffer sb = new StringBuffer("");
+                String line = "";
+
+                while ((line = in.readLine()) != null) {
+                    sb.append(line);
+                }
+
+                in.close();
+
+                JsonResponse = sb.toString();
+                Log.e("tag", JsonResponse);
+
+                return JsonResponse;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            if (s != null) {
+                if (s.contains("PAY_CAR_SUCCESS")) {
+
+                    Log.e("tag", "****Success");
+
+                    Intent intent = new Intent(ParkingInfo.this, LogIn2.class);
+                    startActivity(intent);
+
 
                 } else {
                     Log.e("tag", "****Failed to export data");
@@ -501,13 +595,13 @@ public class ParkingInfo extends AppCompatActivity implements NavigationView.OnN
 
                 try {
                     JSONArray parentArrayOrders = parentObject.getJSONArray("CAPTAINS_STATUS");
-
+                    timeToArrive="";
                     for (int i = 0; i < parentArrayOrders.length(); i++) {
                         JSONObject finalObject = parentArrayOrders.getJSONObject(i);
 
                         captain = new Captains();
                         Log.e("****", finalObject.getString("STATUS") + " " + finalObject.getString("CLIENT_NAME"));
-                        if (finalObject.getString("DATE_").equals(currentDate) && finalObject.getString("STATUS").equals("5") && finalObject.getString("CLIENT_NAME").equals(new DBHandler(ParkingInfo.this).getName())) {
+                        if (finalObject.getString("SERIAL").equals(serialOfRaw)&&finalObject.getString("DATE_").equals(currentDate) && finalObject.getString("STATUS").equals("7") && finalObject.getString("CLIENT_NAME").equals(new DBHandler(ParkingInfo.this).getName())) {
                             captain.setCaptainName(finalObject.getString("CAPTAIN_NAME"));
 //                            captain.setCaptainNumber(finalObject.getString("CAPTAIN_NO"));
 //                            captain.setCaptain_rate(finalObject.getString("CAPTAIN_RATE"));
@@ -560,47 +654,70 @@ public class ParkingInfo extends AppCompatActivity implements NavigationView.OnN
             if (!timeToArrive.equals("")) {
 
                 dbHandler.updateCurrentPage("parking2");
-                progressDialog.dismiss();
-
-                dialog2 = new Dialog(ParkingInfo.this);
-                dialog2.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                dialog2.setContentView(R.layout.valet_back_dialog);
-                dialog2.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                dialog2.getWindow().getAttributes().windowAnimations = R.style.DialogTheme; //style id
-
-
-                TextView textView = dialog2.findViewById(R.id.tt);
-                TextView name = dialog2.findViewById(R.id.name);
-
-                textView.setText("Your car will be ready after " + timeToArrive + " minutes with :");
-                name.setText(captain.getCaptainName());
-                Button req = dialog2.findViewById(R.id.request);
-
-                req.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-// here
-                       new JSONTask3().execute();
+                try {
+                    progressDialog.dismiss();
+                }catch (Exception e){
+                    Log.e("errorInParkingTask2","error");
+                }
+                try{
+                    if(dialog2!=null) {
+                        if (dialog2.isShowing()) {
+                            //
+                        }else {
+                            showParkDialog();
+                            dialog2.show();
+                        }
+                    }else {
+                        showParkDialog();
+                        dialog2.show();
                     }
-                });
-                dialog2.show();
+                }catch (Exception e){
+
+                }
 
             } else {
 
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        new JSONTask2().execute();
-
-                    }
-                }, 6000);
+//                new Handler().postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        new JSONTask2().execute();
+//
+//                    }
+//                }, 6000);
 //                Toast.makeText(LoginActivity.this, "Not able to fetch data from server, please check url.", Toast.LENGTH_SHORT).show();
             }
         }
     }
 
 
+    void showParkDialog (){
+
+        dialog2 = new Dialog(ParkingInfo.this);
+        dialog2.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog2.setContentView(R.layout.valet_back_dialog);
+        dialog2.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog2.getWindow().getAttributes().windowAnimations = R.style.DialogTheme; //style id
+
+
+        TextView textView = dialog2.findViewById(R.id.tt);
+        TextView name = dialog2.findViewById(R.id.name);
+
+        textView.setText("Your car will be ready after " + timeToArrive + " minutes with :");
+        name.setText(captain.getCaptainName());
+        Button req = dialog2.findViewById(R.id.request);
+
+        req.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+// here
+                new JSONTask3().execute();
+            }
+        });
+
+
+
+    }
 
     private class JSONTask3 extends AsyncTask<String, String, List<Clients>> {
 
@@ -648,7 +765,7 @@ public class ParkingInfo extends AppCompatActivity implements NavigationView.OnN
 
                         captain = new Captains();
                         Log.e("****", finalObject.getString("STATUS") + " " + finalObject.getString("CLIENT_NAME"));
-                        if (finalObject.getString("DATE_").equals(currentDate) && finalObject.getString("STATUS").equals("7") && finalObject.getString("CLIENT_NAME").equals(new DBHandler(ParkingInfo.this).getName())) {
+                        if (finalObject.getString("SERIAL").equals(serialOfRaw) &&finalObject.getString("DATE_").equals(currentDate) && finalObject.getString("STATUS").equals("5") && finalObject.getString("CLIENT_NAME").equals(new DBHandler(ParkingInfo.this).getName())) {
                             ready = true;
                             break;
                         }
@@ -693,52 +810,135 @@ public class ParkingInfo extends AppCompatActivity implements NavigationView.OnN
 
             if (ready) {
 
-                dialog2.dismiss();
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-
-
-                        Dialog dialog3 = new Dialog(ParkingInfo.this);
-                        dialog3.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                        dialog3.setContentView(R.layout.notify);
-                        dialog3.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                        dialog3.getWindow().getAttributes().windowAnimations = R.style.DialogTheme; //style id
-
-                        Button req = dialog3.findViewById(R.id.request);
-
-                        req.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-
-
-                                IntentIntegrator intentIntegrator = new IntentIntegrator(ParkingInfo.this);
-                                intentIntegrator.setDesiredBarcodeFormats(intentIntegrator.ALL_CODE_TYPES);
-                                intentIntegrator.setBeepEnabled(true);
-                                intentIntegrator.setCameraId(0);
-                                intentIntegrator.setOrientationLocked(true);
-                                intentIntegrator.setPrompt("SCAN");
-                                intentIntegrator.setBarcodeImageEnabled(false);
-                                intentIntegrator.initiateScan();
-
-                            }
-                        });
-
+                try {
+                    dialog2.dismiss();
+                }catch (Exception e){
+                    Log.e("errorInParkingTask3","error");
+                }
+                try{
+                    if(dialog3!=null) {
+                        if (dialog3.isShowing()) {
+                            //
+                        }else {
+                            requestDialog();
+                            dialog3.show();
+                        }
+                    }else {
+                        requestDialog();
                         dialog3.show();
                     }
-                }, 6000);
+                }catch (Exception e){
+
+                }
+
+
+
+
+//                new Handler().postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//
+//
+//                        Dialog dialog3 = new Dialog(ParkingInfo.this);
+//                        dialog3.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//                        dialog3.setContentView(R.layout.notify);
+//                        dialog3.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+//                        dialog3.getWindow().getAttributes().windowAnimations = R.style.DialogTheme; //style id
+//
+//                        Button req = dialog3.findViewById(R.id.request);
+//
+//                        req.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//
+//
+//                                IntentIntegrator intentIntegrator = new IntentIntegrator(ParkingInfo.this);
+//                                intentIntegrator.setDesiredBarcodeFormats(intentIntegrator.ALL_CODE_TYPES);
+//                                intentIntegrator.setBeepEnabled(true);
+//                                intentIntegrator.setCameraId(0);
+//                                intentIntegrator.setOrientationLocked(true);
+//                                intentIntegrator.setPrompt("SCAN");
+//                                intentIntegrator.setBarcodeImageEnabled(false);
+//                                intentIntegrator.initiateScan();
+//
+//                            }
+//                        });
+//
+//                        dialog3.show();
+//                    }
+//                }, 6000);
             } else {
 
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        new JSONTask3().execute();
-
-                    }
-                }, 6000);
+//                new Handler().postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        new JSONTask3().execute();
+//
+//                    }
+//                }, 6000);
 //                Toast.makeText(LoginActivity.this, "Not able to fetch data from server, please check url.", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    void requestDialog(){
+
+         dialog3 = new Dialog(ParkingInfo.this);
+        dialog3.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog3.setContentView(R.layout.notify);
+        dialog3.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog3.getWindow().getAttributes().windowAnimations = R.style.DialogTheme; //style id
+
+        Button req = dialog3.findViewById(R.id.request);
+
+        req.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                IntentIntegrator intentIntegrator = new IntentIntegrator(ParkingInfo.this);
+                intentIntegrator.setDesiredBarcodeFormats(intentIntegrator.ALL_CODE_TYPES);
+                intentIntegrator.setBeepEnabled(true);
+                intentIntegrator.setCameraId(0);
+                intentIntegrator.setOrientationLocked(true);
+                intentIntegrator.setPrompt("SCAN");
+                intentIntegrator.setBarcodeImageEnabled(false);
+                intentIntegrator.initiateScan();
+
+            }
+        });
+
+        //dialog3.show();
+    }
+
+    void Timer() {
+
+        Timer T = new Timer();
+        T.scheduleAtFixedRate(new TimerTask() {
+            @SuppressLint("LongLogTag")
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public void run() {
+
+                Handler h = new Handler(Looper.getMainLooper());
+                h.post(new Runnable() {
+                    public void run() {
+                        Log.e("mm", "in 123123");
+                        Handler h = new Handler(Looper.getMainLooper());
+                        h.post(new Runnable() {
+                            @SuppressLint("SetTextI18n")
+                            public void run() {
+
+                                new JSONTask2().execute();
+                                new JSONTask3().execute();
+                            }
+                        });
+                    }
+                });
+
+
+            }
+        }, 10, 1000);
     }
 
 
