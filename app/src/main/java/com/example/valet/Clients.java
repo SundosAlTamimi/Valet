@@ -26,6 +26,7 @@ public class Clients {
 
     public String captainName;
     public String captainNumber;
+    public String currentPage;
 
     public Clients(String userName, String password, String e_mail, String phoneNumber, String carType, String carModel, String carColor, String carLot, Bitmap userPic, Bitmap carPic) {
         this.userName = userName;
@@ -171,6 +172,14 @@ public class Clients {
 
     public void setCaptainNumber(String captainNumber) {
         this.captainNumber = captainNumber;
+    }
+
+    public String getCurrentPage() {
+        return currentPage;
+    }
+
+    public void setCurrentPage(String currentPage) {
+        this.currentPage = currentPage;
     }
 
     public JSONObject getJSONObject() {

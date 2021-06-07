@@ -125,8 +125,20 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
         setContentView(R.layout.activity_main);
 
         dbHandler = new DBHandler(this);
+
+        searchView = findViewById(R.id.search);
         scan = findViewById(R.id.scan);
         nDrawerLayout = findViewById(R.id.nav_view);
+
+
+        String current = dbHandler.getUSER_INFO().getCurrentPage();
+        if (current.equals("map1")){
+            scan.setVisibility(View.VISIBLE);
+            Toast.makeText(this, "Your valet is waiting for you !", Toast.LENGTH_LONG).show();
+            initialization();
+        };
+
+
         Spinner loc = findViewById(R.id.loc);
         //ImageButton map = findViewById(R.id.mapView);
         TextView avi = findViewById(R.id.available);
@@ -135,7 +147,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        searchView = findViewById(R.id.search);
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -864,6 +876,8 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
             super.onPostExecute(s);
             if (s != null) {
                 if (s.contains("ACCEPT_CAPTAIN SUCCESS")) {
+
+                    dbHandler.updateCurrentPage("map1");
 
                     Log.e("tag", "****Success");
                 } else {

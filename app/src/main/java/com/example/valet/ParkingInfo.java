@@ -65,11 +65,19 @@ public class ParkingInfo extends AppCompatActivity implements NavigationView.OnN
     boolean ready = false;
 
     Dialog dialog2;
+    DBHandler dbHandler;
+
+    public static String GLOBAL_STATUS = "0";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.parking_dialog);
+
+        dbHandler = new DBHandler(this);
+
+
 
         String currentTime = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
 
@@ -78,7 +86,12 @@ public class ParkingInfo extends AppCompatActivity implements NavigationView.OnN
         vPhone = findViewById(R.id.phone);
         time = findViewById(R.id.time);
 
-        setParkingInfo();
+        if( GLOBAL_STATUS.equals("0")) {
+            setParkingInfo(0);
+        } else {
+            setParkingInfo(1);
+
+        }
 
         reqCar = findViewById(R.id.equestCar);
         reqCar.setOnClickListener(new View.OnClickListener() {
@@ -121,15 +134,58 @@ public class ParkingInfo extends AppCompatActivity implements NavigationView.OnN
     }
 
     @SuppressLint("SetTextI18n")
-    void setParkingInfo() {
+    void setParkingInfo(int flag) {
 
         MainActivity obj = new MainActivity();
         String[] parkInfo = obj.getParkingInfo();
 
-        location.setText("My Location : Taj Mall");
-        vName.setText("Valet Name : " + parkInfo[2]);
-        vPhone.setText("Phone # : " + parkInfo[3]);
-        time.setText("Time Of Parking : " + parkInfo[4]);
+        if (flag == 0) {
+            location.setText("My Location : Taj Mall");
+            vName.setText("Valet Name : " + parkInfo[2]);
+            vPhone.setText("Phone # : " + parkInfo[3]);
+            time.setText("Time Of Parking : " + parkInfo[4]);
+
+            dbHandler.updateCurrentPage("parking");
+            dbHandler.addParkingInfo("Taj Mall",parkInfo[2],parkInfo[3],parkInfo[4]);
+
+        } else {
+
+            Captains captains = dbHandler.getParkingInfo();
+            location.setText("My Location : "+ captains.getCaptain_rate());
+            vName.setText("Valet Name : " + captains.getCaptainName());
+            vPhone.setText("Phone # : " + captains.getCaptainNumber());
+            time.setText("Time Of Parking : " + captains.getClientName());
+
+            if(dbHandler.getUSER_INFO().getCurrentPage().equals("parking2")){
+
+                reqCar.setEnabled(false);
+
+                dialog2 = new Dialog(ParkingInfo.this);
+                dialog2.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog2.setContentView(R.layout.valet_back_dialog);
+                dialog2.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialog2.getWindow().getAttributes().windowAnimations = R.style.DialogTheme; //style id
+
+
+                TextView textView = dialog2.findViewById(R.id.tt);
+                TextView name = dialog2.findViewById(R.id.name);
+
+                textView.setText("Your car will be ready after few minutes ");
+                name.setText("");
+                Button req = dialog2.findViewById(R.id.request);
+
+                req.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+// here
+                        new JSONTask3().execute();
+                    }
+                });
+                dialog2.show();
+
+            }
+        }
 
     }
 
@@ -503,6 +559,7 @@ public class ParkingInfo extends AppCompatActivity implements NavigationView.OnN
 
             if (!timeToArrive.equals("")) {
 
+                dbHandler.updateCurrentPage("parking2");
                 progressDialog.dismiss();
 
                 dialog2 = new Dialog(ParkingInfo.this);
