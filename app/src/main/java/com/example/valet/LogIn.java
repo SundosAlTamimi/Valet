@@ -52,14 +52,7 @@ import java.util.List;
 
 public class LogIn extends AppCompatActivity {
 
-    String name = "Ali";
-    String password = "111";
-    String Email = "ali1993@gmail.com";
-    String number = "0795425583";
-    String type = "1";
-    String carTyp = "Bicanto";
-    String carColor = " Orange";
-    String carNo = "2121112";
+
     Button logIn;
 
     Spinner carType;
@@ -92,11 +85,13 @@ public class LogIn extends AppCompatActivity {
         if (current.equals("map1")){
             Intent intent = new Intent(LogIn.this, MainActivity.class);
             startActivity(intent);
+            finish();
         };
         if (current.equals("parking")){
             ParkingInfo.GLOBAL_STATUS = "1";
             Intent intent = new Intent(LogIn.this, ParkingInfo.class);
             startActivity(intent);
+            finish();
         };
 
         logIn = findViewById(R.id.logInButton);
@@ -108,7 +103,7 @@ public class LogIn extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                if (userNameLog.getText().toString().equals("")) { // for me !
+                if (userNameLog.getText().toString().equals("kkk")) { // for me !
 
                     Intent intent = new Intent(LogIn.this, LogIn2.class);
                     startActivity(intent);
@@ -144,8 +139,12 @@ public class LogIn extends AppCompatActivity {
 
                                 Intent intent = new Intent(LogIn.this, LogIn2.class);
                                 startActivity(intent);
-
+                                finish();
                                 break;
+
+                            } else {
+                                Toast.makeText(LogIn.this, "Incorrect Username or password", Toast.LENGTH_SHORT).show();
+
                             }
                         }
                     }
@@ -255,6 +254,7 @@ public class LogIn extends AppCompatActivity {
 
                                                 new JSONTask2().execute();
 
+                                                finish();
 
                                             } else {
                                                 TcarNo.setError("Required!");

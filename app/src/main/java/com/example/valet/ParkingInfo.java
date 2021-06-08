@@ -543,7 +543,7 @@ public class ParkingInfo extends AppCompatActivity implements NavigationView.OnN
 
                     Intent intent = new Intent(ParkingInfo.this, LogIn2.class);
                     startActivity(intent);
-
+                    finish();
 
                 } else {
                     Log.e("tag", "****Failed to export data");

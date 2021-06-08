@@ -124,6 +124,7 @@ public class LogIn2 extends AppCompatActivity {
 
                 Intent intent = new Intent(LogIn2.this, MainActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
 

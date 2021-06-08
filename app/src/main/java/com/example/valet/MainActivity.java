@@ -93,7 +93,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
     String barcodeValue;
 
     ProgressDialog progressDialog;
-    String latitude , longitude;
+    String latitude, longitude;
     Captains captain;
 
     private GoogleMap mMap;
@@ -108,12 +108,13 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
 
     LatLng reqLatLong;
 
-    public static String serialOfRaw="";
+    public static String serialOfRaw = "";
     DBHandler dbHandler;
     Dialog dialogValet;
 
-    public static String[] parts ;
+    public static String[] parts;
 
+    boolean isParked = false;
 
     private Map<Marker, Map<String, Object>> markers = new HashMap<>();
     private Map<String, Object> dataModel = new HashMap<>();
@@ -134,11 +135,12 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
 
 
         String current = dbHandler.getUSER_INFO().getCurrentPage();
-        if (current.equals("map1")){
+        if (current.equals("map1")) {
             scan.setVisibility(View.VISIBLE);
             Toast.makeText(this, "Your valet is waiting for you !", Toast.LENGTH_LONG).show();
             initialization();
-        };
+        }
+        ;
 
 
         Spinner loc = findViewById(R.id.loc);
@@ -157,10 +159,10 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
                 String location = searchView.getQuery().toString();
                 List<Address> addressList = null;
 
-                if(location!= null || !location.equals("")){
+                if (location != null || !location.equals("")) {
                     Geocoder geocoder = new Geocoder(MainActivity.this);
                     try {
-                        addressList = geocoder.getFromLocationName(location,1);
+                        addressList = geocoder.getFromLocationName(location, 1);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -176,8 +178,8 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
 
 
                         mMap.setOnMarkerClickListener(MainActivity.this);
-                    }catch (Exception e){
-                        Log.e("master","error");
+                    } catch (Exception e) {
+                        Log.e("master", "error");
                     }
                 }
 
@@ -249,7 +251,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
 
     void Timer() {
 
-       Timer T = new Timer();
+        Timer T = new Timer();
         T.scheduleAtFixedRate(new TimerTask() {
             @SuppressLint("LongLogTag")
             @RequiresApi(api = Build.VERSION_CODES.M)
@@ -265,7 +267,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
                             @SuppressLint("SetTextI18n")
                             public void run() {
 
-                           new  JSONTask2().execute();
+                                new JSONTask2().execute();
                             }
                         });
                     }
@@ -324,17 +326,17 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
 
         mMap = googleMap;
 
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener(){
-            public void onMapClick(LatLng point){
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            public void onMapClick(LatLng point) {
                 Toast.makeText(MainActivity.this,
                         point.latitude + ", " + point.longitude,
                         Toast.LENGTH_SHORT).show();
 
-                mMap.addMarker(new MarkerOptions().position(point).title(getAddressName(MainActivity.this , point.latitude , point.longitude)));
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(point , 15));
+                mMap.addMarker(new MarkerOptions().position(point).title(getAddressName(MainActivity.this, point.latitude, point.longitude)));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(point, 15));
                 mMap.setOnMarkerClickListener(MainActivity.this);
 
-                Log.e("*****" ,  getAddressName(MainActivity.this , point.latitude ,  point.longitude));
+                Log.e("*****", getAddressName(MainActivity.this, point.latitude, point.longitude));
             }
         });
 
@@ -419,8 +421,8 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
 
 
         Log.e("******", marker.getTitle());
-        latitude = ""+ marker.getPosition().latitude;
-        longitude = ""+ marker.getPosition().longitude;
+        latitude = "" + marker.getPosition().latitude;
+        longitude = "" + marker.getPosition().longitude;
 
         if (!marker.getTitle().equals("My Location"))
             reqService(marker);
@@ -450,7 +452,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
         TextView text = dialog.findViewById(R.id.text);
         Button req = dialog.findViewById(R.id.request);
 
-        text.setText("Request a valet in '"+ marker.getTitle() + "'");
+        text.setText("Request a valet in '" + marker.getTitle() + "'");
 
         req.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -484,7 +486,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
     }
 
     @SuppressLint("SetTextI18n")
-    void scanDialog(){
+    void scanDialog() {
 
         Dialog dialog3 = new Dialog(MainActivity.this);
         dialog3.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -494,7 +496,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
 
 
         TextView textView = dialog3.findViewById(R.id.tt);
-        textView.setText(captain.getCaptainName() +" is waiting for you !");
+        textView.setText(captain.getCaptainName() + " is waiting for you !");
 
         Button scan = dialog3.findViewById(R.id.scan);
 
@@ -532,7 +534,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
 //            add = add + "\n" + obj.getSubAdminArea();
 //            add = add + "\n" + obj.getLocality();
 //            add = add + "\n" + obj.getSubThoroughfare() ;
-            add = add + "\n" + obj.getSubLocality() ;
+            add = add + "\n" + obj.getSubLocality();
 //            add = add + "\n" + obj.getFeatureName() ;
 //            add = add + "\n" + obj.getPremises() ;
 //            add = add + "\n" + obj.getSubAdminArea() ;
@@ -571,15 +573,32 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
 
                 new JSONTask5().execute();
 
-                Intent intent = new Intent(MainActivity.this, ParkingInfo.class);
-                startActivity(intent);
+
+                Dialog dialog = new Dialog(MainActivity.this);
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setContentView(R.layout.car_parking);
+                dialog.setCanceledOnTouchOutside(false);
+                dialog.setCancelable(false);
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme; //style id
+
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        new JSONTask6().execute();
+                    }
+                }, 6000);
+
+                dialog.show();
+
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
-    public String[] getParkingInfo(){
+    public String[] getParkingInfo() {
         return parts;
     }
 
@@ -771,13 +790,13 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
                         JSONObject finalObject = parentArrayOrders.getJSONObject(i);
 
                         captain = new Captains();
-                        Log.e("****", finalObject.getString("STATUS") + " " + finalObject.getString("CLIENT_NAME") );
-                        if(finalObject.getString("DATE_").equals(currentDate) && finalObject.getString("STATUS").equals("0") && finalObject.getString("CLIENT_NAME").equals(dbHandler.getName())) {
+                        Log.e("****", finalObject.getString("STATUS") + " " + finalObject.getString("CLIENT_NAME"));
+                        if (finalObject.getString("DATE_").equals(currentDate) && finalObject.getString("STATUS").equals("0") && finalObject.getString("CLIENT_NAME").equals(dbHandler.getName())) {
                             captain.setCaptainName(finalObject.getString("CAPTAIN_NAME"));
                             captain.setCaptainNumber(finalObject.getString("CAPTAIN_NO"));
                             captain.setCaptain_rate(finalObject.getString("CAPTAIN_RATE"));
-                            captain.setSerial( finalObject.getString("SERIAL"));
-                            serialOfRaw=captain.getSerial();
+                            captain.setSerial(finalObject.getString("SERIAL"));
+                            serialOfRaw = captain.getSerial();
                             //captain.setCaptainPic( finalObject.getString("CAPTAIN_PIC"));
                             //captain.setClientName( finalObject.getString("CLIENT_NAME"));
                             //captain.setClientPhone( finalObject.getString("CLIENT_PHONE"));
@@ -828,28 +847,28 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
 
                     try {
                         progressDialog.dismiss();
-                    }catch (Exception e){
-                        Log.e("Ex","error");
+                    } catch (Exception e) {
+                        Log.e("Ex", "error");
                     }
                     try {
 
-if(dialogValet!=null) {
-    if (dialogValet.isShowing()) {
-        Log.e("Ex", "errors" + dialogValet.isShowing());
-    } else {
-        Log.e("Ex2", "error" + dialogValet.isShowing());
-        valetDialog();
-        dialogValet.show();
-    }
-}else {
-    valetDialog();
-}
-                }catch (Exception e){
-                    Log.e("Ex","errore");
-                }
+                        if (dialogValet != null) {
+                            if (dialogValet.isShowing()) {
+                                Log.e("Ex", "errors" + dialogValet.isShowing());
+                            } else {
+                                Log.e("Ex2", "error" + dialogValet.isShowing());
+                                valetDialog();
+                                dialogValet.show();
+                            }
+                        } else {
+                            valetDialog();
+                        }
+                    } catch (Exception e) {
+                        Log.e("Ex", "errore");
+                    }
 
                 } else {
-                    Log.e("Captain", "********else" );
+                    Log.e("Captain", "********else");
 //                    new Handler().postDelayed(new Runnable() {
 //                        @Override
 //                        public void run() {
@@ -884,7 +903,6 @@ if(dialogValet!=null) {
                 HttpClient client = new DefaultHttpClient();
                 HttpPost request = new HttpPost();
                 request.setURI(new URI("http://5.189.130.98:8085/exportt.php"));
-
 
 
                 String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
@@ -1026,8 +1044,7 @@ if(dialogValet!=null) {
 
                     try {
                         progressDialog.show();
-                    }catch (Exception E)
-                    {
+                    } catch (Exception E) {
                         Log.e("tag", "****Ex Success");
                     }
 
@@ -1075,7 +1092,7 @@ if(dialogValet!=null) {
                 nameValuePairs.add(new BasicNameValuePair("CLIENT_NAME", captain.getClientName()));
                 nameValuePairs.add(new BasicNameValuePair("CLIENT_NO", captain.getClientPhone()));
                 nameValuePairs.add(new BasicNameValuePair("CURRENT_DATE", currentDate));
-                nameValuePairs.add(new BasicNameValuePair("CURRENT_TIE", currentTime));
+                nameValuePairs.add(new BasicNameValuePair("CURRENT_TIME", currentTime));
 
 
                 //Log.e("tag", "" + jsonArrayPics.toString());
@@ -1122,12 +1139,122 @@ if(dialogValet!=null) {
         }
     }
 
+    private class JSONTask6 extends AsyncTask<String, String, String> {
 
-    void valetDialog(){
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+
+                String JsonResponse = null;
+                HttpClient client = new DefaultHttpClient();
+                HttpPost request = new HttpPost();
+                request.setURI(new URI("http://5.189.130.98:8085/exportt.php"));
+
+
+                String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+                String currentTime = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
+
+                captain.setClientName(dbHandler.getUSER_INFO().getUserName());
+                captain.setClientPhone(dbHandler.getUSER_INFO().getPhoneNumber());
+
+                JSONObject jsonObjectCaptain = captain.getJSONObject();
+
+                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
+                nameValuePairs.add(new BasicNameValuePair("IS_CAR_PARKED", jsonObjectCaptain.toString().trim()));
+                nameValuePairs.add(new BasicNameValuePair("CLIENT_NAME", captain.getClientName()));
+                nameValuePairs.add(new BasicNameValuePair("CLIENT_NO", captain.getClientPhone()));
+                nameValuePairs.add(new BasicNameValuePair("CURRENT_DATE", currentDate));
+                nameValuePairs.add(new BasicNameValuePair("CURRENT_TIME", currentTime));
+
+
+                //Log.e("tag", "" + jsonArrayPics.toString());
+
+                request.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+                HttpResponse response = client.execute(request);
+
+                BufferedReader in = new BufferedReader(new
+                        InputStreamReader(response.getEntity().getContent()));
+
+                StringBuffer sb = new StringBuffer("");
+                String line = "";
+
+                while ((line = in.readLine()) != null) {
+                    sb.append(line);
+                }
+
+                in.close();
+
+                JsonResponse = sb.toString();
+
+                JSONObject parentObject = new JSONObject(JsonResponse);
+
+                try {
+                    JSONArray parentArrayOrders = parentObject.getJSONArray("CAPTAINS_STATUS");
+
+                    for (int i = 0; i < parentArrayOrders.length(); i++) {
+                        JSONObject finalObject = parentArrayOrders.getJSONObject(i);
+
+                        //Log.e("****", finalObject.getString("STATUS") + " " + finalObject.getString("CLIENT_NAME") );
+                        if (finalObject.getString("DATE_").equals(currentDate) && finalObject.getString("STATUS").equals("5") && finalObject.getString("CLIENT_NAME").equals(dbHandler.getName())) {
+
+                            isParked = true;
+                            break;
+                        }
+
+                    }
+                } catch (JSONException e) {
+//                    Log.e("Import Data2", e.getMessage().toString());
+                }
+
+                return JsonResponse;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            if (s != null) {
+
+                if(isParked){
+                    Intent intent = new Intent(MainActivity.this, ParkingInfo.class);
+                    startActivity(intent);
+                    finish();
+                } else {
+
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            new JSONTask6().execute();
+                        }
+                    }, 6000);
+                }
+
+            } else {
+                Log.e("tag", "****Failed to export data Please check internet connection");
+            }
+        }
+    }
+
+
+    void valetDialog() {
 
         dialogValet = new Dialog(MainActivity.this);
         dialogValet.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialogValet.setContentView(R.layout.valet_dialog);
+        dialogValet.setCanceledOnTouchOutside(false);
+        dialogValet.setCancelable(false);
         dialogValet.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialogValet.getWindow().getAttributes().windowAnimations = R.style.DialogTheme; //style id
 
@@ -1141,7 +1268,7 @@ if(dialogValet!=null) {
             phone.setText("Phone # :" + captain.getCaptainNumber());
             int rat = Integer.parseInt(captain.getCaptain_rate());
             rate.setRating(rat);
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
 /*
@@ -1178,7 +1305,7 @@ if(dialogValet!=null) {
 
             }
         });
-      //  dialogValet.show();
+        //  dialogValet.show();
 
     }
 
