@@ -111,6 +111,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
     public static String serialOfRaw = "";
     DBHandler dbHandler;
     Dialog dialogValet;
+    Dialog dialog;
 
     public static String[] parts;
 
@@ -574,7 +575,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
                 new JSONTask5().execute();
 
 
-                Dialog dialog = new Dialog(MainActivity.this);
+                dialog = new Dialog(MainActivity.this);
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialog.setContentView(R.layout.car_parking);
                 dialog.setCanceledOnTouchOutside(false);
@@ -1228,6 +1229,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
             if (s != null) {
 
                 if(isParked){
+                    dialog.dismiss();
                     Intent intent = new Intent(MainActivity.this, ParkingInfo.class);
                     startActivity(intent);
                     finish();
