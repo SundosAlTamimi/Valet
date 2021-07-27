@@ -81,18 +81,26 @@ public class LogIn extends AppCompatActivity {
         dbHandler = new DBHandler(this);
 
         String current = dbHandler.getUSER_INFO().getCurrentPage();
+if(!TextUtils.isEmpty(current)) {
 
-        if (current.equals("map1")){
-            Intent intent = new Intent(LogIn.this, MainActivity.class);
-            startActivity(intent);
-            finish();
-        };
-        if (current.equals("parking")){
-            ParkingInfo.GLOBAL_STATUS = "1";
-            Intent intent = new Intent(LogIn.this, ParkingInfo.class);
-            startActivity(intent);
-            finish();
-        };
+
+    if (current.equals("map1")) {
+        Intent intent = new Intent(LogIn.this, MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
+    ;
+    if (current.equals("parking")) {
+        ParkingInfo.GLOBAL_STATUS = "1";
+        Intent intent = new Intent(LogIn.this, ParkingInfo.class);
+        startActivity(intent);
+        finish();
+    }
+    ;
+
+}else {
+
+}
 
         logIn = findViewById(R.id.logInButton);
         signUp = findViewById(R.id.sign_up);

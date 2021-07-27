@@ -26,6 +26,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -136,13 +137,15 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
 
 
         String current = dbHandler.getUSER_INFO().getCurrentPage();
-        if (current.equals("map1")) {
-            scan.setVisibility(View.VISIBLE);
-            Toast.makeText(this, "Your valet is waiting for you !", Toast.LENGTH_LONG).show();
-            initialization();
-        }
-        ;
+        if(!TextUtils.isEmpty(current)) {
 
+            if (current.equals("map1")) {
+                scan.setVisibility(View.VISIBLE);
+                Toast.makeText(this, "Your valet is waiting for you !", Toast.LENGTH_LONG).show();
+                initialization();
+            }
+            ;
+        }
 
         Spinner loc = findViewById(R.id.loc);
         //ImageButton map = findViewById(R.id.mapView);
@@ -337,7 +340,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(point, 15));
                 mMap.setOnMarkerClickListener(MainActivity.this);
 
-                Log.e("*****", getAddressName(MainActivity.this, point.latitude, point.longitude));
+           //     Log.e("*****", getAddressName(MainActivity.this, point.latitude, point.longitude));
             }
         });
 
@@ -421,7 +424,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
     public boolean onMarkerClick(final Marker marker) {
 
 
-        Log.e("******", marker.getTitle());
+//        Log.e("******", marker.getTitle());
         latitude = "" + marker.getPosition().latitude;
         longitude = "" + marker.getPosition().longitude;
 
@@ -443,7 +446,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
 
     void reqService(Marker marker) {
 
-        Dialog dialog = new Dialog(MainActivity.this);
+        Dialog dialog = new Dialog(MainActivity.this,R.style.Theme_Dialog);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.conferm_req);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -489,7 +492,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
     @SuppressLint("SetTextI18n")
     void scanDialog() {
 
-        Dialog dialog3 = new Dialog(MainActivity.this);
+        Dialog dialog3 = new Dialog(MainActivity.this,R.style.Theme_Dialog);
         dialog3.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog3.setContentView(R.layout.waiting_dialog);
         dialog3.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -575,7 +578,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
                 new JSONTask5().execute();
 
 
-                dialog = new Dialog(MainActivity.this);
+                dialog = new Dialog(MainActivity.this,R.style.Theme_Dialog);
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialog.setContentView(R.layout.car_parking);
                 dialog.setCanceledOnTouchOutside(false);
@@ -623,7 +626,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
         if (id == R.id.item1) {
             // Intent i = new Intent(MainActivity.this, MainScreen.class);
             //startActivity(i);
-            Dialog dialog = new Dialog(MainActivity.this);
+            Dialog dialog = new Dialog(MainActivity.this,R.style.Theme_Dialog);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.setContentView(R.layout.profile);
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -1252,7 +1255,7 @@ public class MainActivity extends FragmentActivity implements NavigationView.OnN
 
     void valetDialog() {
 
-        dialogValet = new Dialog(MainActivity.this);
+        dialogValet = new Dialog(MainActivity.this,R.style.Theme_Dialog);
         dialogValet.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialogValet.setContentView(R.layout.valet_dialog);
         dialogValet.setCanceledOnTouchOutside(false);
